@@ -6,11 +6,9 @@
      
       <div class="categories">
         <div class="quiz-general">
-          <p> Erweitere deine Kenntnisse und starte ein Quiz in folgenden Kategorien</p>
+          <p> Erweitere deine Kenntnisse und starte ein Quiz!</p>
           <div class="buttons">
-            <button @click="goToQuiz('Allgemeinwissen')">Allgemeinwissen</button>
-            <button @click="goToQuiz('Geschichte')">Geschichte</button>
-            <button @click="goToQuiz('Geografie')">Geografie</button>
+            <router-link to="/categories" class="quiz">Los geht's</router-link>
           </div>
         </div>
         <div class="cooperative">
@@ -70,7 +68,7 @@
   </script>
   
 <style scoped>
- button{
+ button, a{
   appearance: none;
   padding: 0.5rem 1rem;
   background-color: rgba(10, 166, 215, 1);
@@ -81,6 +79,8 @@
   display:block;
   margin: 0 auto;
   cursor:pointer;
+  text-decoration: none;
+  font-size: 18px;
 }
 .categories{
   display: grid;

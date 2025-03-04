@@ -31,8 +31,8 @@ router.post('/register', userMiddleware.validateRegister, (req, res, next) => {
                     });
                 } else {
                     db.query(
-                        `INSERT INTO users (id, username, password, registered) 
-                        VALUES ('${uuid.v4()}', ${db.escape(req.body.username)}, '${hash}', now());`,
+                        `INSERT INTO users (id, username, password, registered, last_login) 
+                        VALUES ('${uuid.v4()}', ${db.escape(req.body.username)}, '${hash}', now(), now());`,
                         (err, result) => {
                             if (err) {
                                 return res.status(400).send({
@@ -135,6 +135,42 @@ router.get('/', (req, res) => {
     });
   });
 
+// Route für das Abrufen der Kategorien
+router.get('/categories', (req, res) => {
+    const query = 'SELECT DISTINCT category FROM questions'; // SQL-Abfrage, um alle Kategorien abzurufen
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Fehler beim Abrufen der Kategorien:', err);
+        return res.status(500).json({ message: 'Fehler beim Abrufen der Kategorien' });
+      }
+      res.json(results); // Gibt die Kategorien als JSON zurück
+    });
+});
+
+// Route für das Hinzufügen von Fragen
+router.post('/questions', (req, res) => {
+    console.log("Eingehende Anfrage:", req.body); // Debugging-Ausgabe
+
+    const { question, options, answer, category } = req.body;
+
+    if (!question || !options || answer === undefined || !category) {
+        console.log('Alle Felder sind erforderlich!', req.body);
+        return res.status(400).json({ message: "Alle Felder sind erforderlich!" });
+    }
+
+    const query = 'INSERT INTO questions (question, options, answer, category) VALUES (?, ?, ?, ?)';
+    const values = [question, JSON.stringify(options), answer, category];
+
+    db.query(query, values, (err, result) => {
+        if (err) {
+            console.error('Fehler beim Speichern der Frage:', err);
+            return res.status(500).json({ message: 'Fehler beim Speichern der Frage' });
+        }
+        res.status(201).json({ message: 'Frage erfolgreich hinzugefügt!' });
+    });
+});
+
+
 // Route für das Abrufen der Bestenliste
 router.get('/leaderboard', (req, res) => {
     const query = 'SELECT username, score FROM users ORDER BY score DESC LIMIT 10'; // Sortiere nach Punktestand absteigend, max. 10 Einträge
@@ -163,51 +199,6 @@ router.get('/leaderboard', (req, res) => {
       res.status(200).json({ message: 'Punktestand erfolgreich aktualisiert' });
     });
   });
-//um Fragen der Nutzer in der Datenbank zu speichern:
-  router.post('/questions', userMiddleware.isLoggedIn, (req, res) => {
-    const { question, answer, category = "private" } = req.body;
-    const userId = req.userData.userId; // Benutzer-ID aus dem Token
 
-    if (!question || !answer ) {
-        return res.status(400).json({ message: 'Frage, Antwort oder Kategorie fehlen' });
-    }
 
-    const query = 'INSERT INTO questions (user_id, question, answer, category) VALUES (?, ?, ?, ?)';
-    db.query(query, [userId, question, answer, category], (err, result) => {
-        if (err) {
-            console.error('Fehler beim Speichern der Frage:', err);
-            return res.status(500).json({ message: 'Fehler beim Speichern der Frage' });
-        }
-        res.status(201).json({ message: 'Frage erfolgreich gespeichert' });
-    });
-});
-
-//Fragen für eingeloggten Nutzer abrufen
-router.get('/questions', userMiddleware.isLoggedIn, (req, res) => {
-    const userId = req.userData.userId; // Benutzer-ID aus dem Token
-
-    const query = 'SELECT id, question, answer, category FROM questions WHERE user_id = ?';
-    db.query(query, [userId], (err, results) => {
-        if (err) {
-            console.error('Fehler beim Abrufen der Fragen:', err);
-            return res.status(500).json({ message: 'Fehler beim Abrufen der Fragen' });
-        }
-        res.json(results); // Gibt die Fragen als JSON zurück
-    });
-});
-
-//damit Nutzer eigene Fragen wieder löschen kann:
-router.delete('/questions/:id', userMiddleware.isLoggedIn, (req, res) => {
-    const userId = req.userData.userId;
-    const questionId = req.params.id;
-
-    const query = 'DELETE FROM questions WHERE id = ? AND user_id = ?';
-    db.query(query, [questionId, userId], (err, result) => {
-        if (err) {
-            console.error('Fehler beim Löschen der Frage:', err);
-            return res.status(500).json({ message: 'Fehler beim Löschen der Frage' });
-        }
-        res.json({ message: 'Frage erfolgreich gelöscht' });
-    });
-});
 module.exports = router;

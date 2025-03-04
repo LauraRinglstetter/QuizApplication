@@ -10,6 +10,13 @@ const app = createApp(App);
 // set auth header
 Axios.defaults.headers.common['Authorization'] = `Bearer ${store.state.token}`;
 
+
+// Setze die Basis-URL für Axios
+Axios.defaults.baseURL = 'http://localhost:3000';
+
+// Global Axios verfügbar machen
+app.config.globalProperties.$axios = Axios;
+
 // Benutze den Router und den Store in der App
 app.use(router); // router einbinden
 app.use(store); // store einbinden

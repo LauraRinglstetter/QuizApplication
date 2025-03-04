@@ -46,7 +46,7 @@
             : 'Nächste Frage' 
         }}
         </button>
-        <router-link to="/home" class="exit">Quiz abbrechen</router-link>
+        <router-link to="/categories" class="exit">Quiz abbrechen</router-link>
       </section>
   
       <section v-else>

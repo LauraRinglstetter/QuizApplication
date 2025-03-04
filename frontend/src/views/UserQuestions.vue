@@ -2,7 +2,7 @@
     <div>
         <router-link to="/home" class="exit button">Zurück zum Dashboard</router-link>
         <h1> Dein Fragenkatalog</h1>
-        <div class="ownQuestions">
+        <!--<div class="ownQuestions">
             <p @click="toggleForm"> Fragenkatalog (Ordner) hinzufügen <span>{{ showForm ? '−' : '+' }}</span></p>
             <div v-if="showForm">
                 <h2>Frage hinzufügen</h2>
@@ -17,68 +17,41 @@
                     <input class="button" type="submit" value="Frage hinzufügen"/>
                 </form>
             </div>
-            <!-- Fragenliste anzeigen -->
+             Fragenliste anzeigen 
             <div v-if="questions.length" class="savedQuestions">
                 <h2>Gespeicherte Fragen</h2>
                 <ul>
-                    <li v-for="(question, index) in questions" :key="index">
-                        <strong>Frage:</strong> {{ question.text }} <br>
+                    <li v-for="question in questions" :key="question.id">
+                        <strong>Frage:</strong> {{ question.question }} <br>
                         <strong>Antwort:</strong> {{ question.answer }}
-                        <button class="button" @click="removeQuestion(index)">Löschen</button>
+                        <button class="button" @click="removeQuestion(question.id)">Löschen</button>
                     </li>
                 </ul>
+                
             </div>
+            <p v-if="msg" class="error-message">{{ msg }}</p>
         </div>
+        -->
     </div>
+
 </template>
 <script>
-import { ref, onMounted, watch } from "vue";
 
-export default {
+
+/*export default {
     setup() {
         const showForm = ref(false);
         const input_question = ref("");
         const input_answer = ref("");
         const questions = ref([]);
         const input_category = ref("private");
-
-        // Fragen aus LocalStorage laden
-        onMounted(() => {
-            const storedQuestions = localStorage.getItem("questions");
-            if (storedQuestions) {
-                questions.value = JSON.parse(storedQuestions);
-            }
-        });
-
-        // Neue Frage hinzufügen
-        const addQuestion = () => {
-            if (input_question.value.trim() === "" || input_answer.value.trim() === "") {
-                return;
-            }
-            questions.value.push({
-                text: input_question.value,
-                answer: input_answer.value,
-            });
-
-            // Speichern und Eingabefelder leeren
-            input_question.value = "";
-            input_answer.value = "";
-        };
-
-        // Frage löschen
-        const removeQuestion = (index) => {
-            questions.value.splice(index, 1);
-        };
-
-        // Fragen automatisch im LocalStorage speichern
-        watch(questions, (newVal) => {
-            localStorage.setItem("questions", JSON.stringify(newVal));
-        }, { deep: true });
+        const msg = ref("");
 
         // Formular ein- und ausblenden
         const toggleForm = () => {
             showForm.value = !showForm.value;
         };
+        onMounted(loadQuestions);
 
         return {
             showForm,
@@ -89,9 +62,11 @@ export default {
             questions,
             addQuestion,
             removeQuestion,
+            msg,
         };
     },
 };
+*/
 </script>
 <style>
 .ownQuestions form{
