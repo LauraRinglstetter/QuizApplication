@@ -120,7 +120,7 @@ const currentQuestion = ref(0);
 // Hole die Fragen von der API
 const fetchQuestions = async (category) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api?category=${category}`);
+    const response = await axios.get(`http://localhost:3000/api/questions?category=${category}`);
     questions.value = response.data.map(q => ({
       question: q.question,
       options: JSON.parse(q.options), // Optionen als JSON umwandeln

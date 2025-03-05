@@ -114,4 +114,9 @@ body, html{
   border-radius: 8px;
   cursor: pointer;
 }
+.exit{
+    margin: 1rem 0 0 3em;
+    display:block;
+    width:fit-content;
+}
 </style>

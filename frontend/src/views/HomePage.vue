@@ -2,8 +2,6 @@
     <div>
       <p v-if="username">Willkommen zurück, {{ username }}!</p>
       <h1>Dein Dashboard</h1>
-      
-     
       <div class="categories">
         <div class="quiz-general">
           <p> Erweitere deine Kenntnisse und starte ein Quiz!</p>
@@ -16,7 +14,7 @@
           <button> Starte ein kooperatives Spiel</button>
         </div>
         <div class="extend-questions">
-          <p> Möchtest du deine Lerninhalte erweitern und eigene Fragen erstellen?</p>
+          <p> Möchtest du eure gemeinsamen Lerninhalte erweitern und eigene Fragen hinzufügen?</p>
           <button @click="goToQuestionsPage"> Erweitere den Fragenkatalog </button>
         </div>
         <div class="best-list">

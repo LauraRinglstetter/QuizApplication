@@ -7,7 +7,6 @@
                 <tr>
                     <th>Benutzername</th>
                     <th>Punktestand</th>
-                    <th>Punktestand</th>
                 </tr>
                 
             </thead>

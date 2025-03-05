@@ -120,7 +120,7 @@ router.post('/start', userMiddleware.isLoggedIn, (req, res, next) => {
 });
 
 // Route für das Abrufen der Quizfragen
-router.get('/', (req, res) => {
+router.get('/questions', (req, res) => {
     const { category } = req.query; // Kategorie aus der Anfrage extrahieren
     if (!category) {
         return res.status(400).json({ message: 'Kategorie nicht angegeben' }); // Fehlermeldung, wenn keine Kategorie angegeben ist

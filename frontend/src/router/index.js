@@ -6,8 +6,6 @@ import QuizPage from '../views/QuizPage.vue';
 import LeaderboardPage from '../views/LeaderboardPage.vue';
 import ProfilePage from '../views/ProfilePage.vue';
 import QuestionsPage from '../views/QuestionsPage.vue';
-import UserQuestions from '../views/UserQuestions.vue';
-import TeamQuestions from '../views/TeamQuestions.vue';
 import CategoriesPage from '../views/CategoriesPage.vue';
 
 const routes = [
@@ -45,16 +43,6 @@ const routes = [
     path: '/questions',
     name: 'questions',
     component: QuestionsPage
-  },
-  {
-    path: '/userquestions',
-    name: 'userquestions',
-    component: UserQuestions
-  },
-  {
-    path: '/teamquestions',
-    name: 'teamquestions',
-    component: TeamQuestions
   },
   {
     path: '/categories',
