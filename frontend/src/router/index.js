@@ -7,6 +7,7 @@ import LeaderboardPage from '../views/LeaderboardPage.vue';
 import ProfilePage from '../views/ProfilePage.vue';
 import QuestionsPage from '../views/QuestionsPage.vue';
 import CategoriesPage from '../views/CategoriesPage.vue';
+import MultiplayerPage from '../views/MultiplayerPage.vue';
 
 const routes = [
   {
@@ -48,6 +49,11 @@ const routes = [
     path: '/categories',
     name: 'categories',
     component: CategoriesPage
+  },
+  {
+    path: '/multiplayer',
+    name: 'multiplayer',
+    component: MultiplayerPage
   }
 ];
 

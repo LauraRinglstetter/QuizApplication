@@ -11,7 +11,7 @@
         </div>
         <div class="cooperative">
           <p> Du möchtest gemeinsam mit anderen Studierenden lernen?</p>
-          <button> Starte ein kooperatives Spiel</button>
+          <button @click="goToMultiplayerPage"> Starte ein kooperatives Spiel</button>
         </div>
         <div class="extend-questions">
           <p> Möchtest du eure gemeinsamen Lerninhalte erweitern und eigene Fragen hinzufügen?</p>
@@ -51,16 +51,19 @@
       }
     },
     goToQuiz(category) {
-      this.$router.push({name: 'quiz', query: {category}}); // Hier verwendest du this.$router, um zur Quiz-Seite zu navigieren
+      this.$router.push({name: 'quiz', query: {category}}); 
     },
     goToLeaderboard() {
-      this.$router.push('/leaderboard'); // Hier navigierst du zur Leaderboard-Seite
+      this.$router.push('/leaderboard');
     },
     goToQuestionsPage(){
-      this.$router.push('/questions'); // Hier navigierst du zur Fragen-Seite
-    }
+      this.$router.push('/questions'); 
+    },
+    goToMultiplayerPage(){
+      this.$router.push('/multiplayer'); 
+    },
   }
-  }
+};
 
 
   </script>
