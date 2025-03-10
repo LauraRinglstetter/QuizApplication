@@ -1,26 +1,165 @@
 <template>
-    <div>
+  <div>
     <router-link to="/home" class="exit button">Zurück zum Dashboard</router-link>
-      <h1>Willkommen zum Multiplayer-Quiz!</h1>
-      <button @click="sendMessage">Nachricht an den Server senden</button>
+    <h1>Multiplayer-Quiz</h1>
+    <p>Wähle eine Kategorie aus, um das Quiz zu starten</p>
+    
+    <div class="overview buttons">
+      <button 
+        v-for="category in categories" 
+        :key="category" 
+        class="category" 
+        @click="selectCategory(category)"
+        :class="{ selected: selectedCategory === category }">
+        {{ category }}         
+      </button> 
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: "App",
-    methods: {
-      sendMessage() {
-        // Nachricht an den Server senden
-        this.$socket.emit("sendMessage", "Hallo Server!");
+    
+    <button v-if="!lobby && selectedCategory" @click="joinLobby">Quiz starten</button>
+
+    <div v-if="lobby">
+      <p>Lobby-ID: {{ lobby.id }}</p>
+      <p>Spieler in der Lobby: {{ lobby.players.length }} / 2</p>
+      <div v-if="lobby.players.length < 2">
+        <p>Warten auf weiteren Spieler...</p>
+      </div>
+      <div v-else>
+        <p>Das Quiz startet jetzt!</p>
+      </div>
+    </div>
+
+    <div v-if="quizStarted">
+      <h2>{{ currentQuestion.question }}</h2>
+      <div class="options">
+        <button 
+          v-for="(option, index) in currentQuestion.options" 
+          :key="index" 
+          @click="sendAnswer(index)"
+          :disabled="hasAnswered">
+          {{ option }}
+        </button>
+      </div>
+      <p v-if="answerFeedback">{{ answerFeedback }}</p>
+    </div>
+
+    <p v-if="gameOver">Spiel beendet! Dein Score: {{ score }}</p>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+import { socket } from "@/main"; // Importiere die Socket-Instanz aus main.js
+import axios from "axios";
+
+export default {
+  setup() {
+    const categories = ref([]); // Kategorien aus der Datenbank
+    const selectedCategory = ref(null);
+    const hasAnswered = ref(false); // Flag, das überprüft, ob der Spieler bereits geantwortet hat
+    const lobby = ref(null);
+    const quizStarted = ref(false);
+    const currentQuestion = ref({});
+    const answerFeedback = ref('');
+    const score = ref(0);
+    const gameOver = ref(false);
+
+    // Abrufen der Kategorien
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/categories");
+        categories.value = response.data.map(cat => cat.category);
+      } catch (error) {
+        console.error("Fehler beim Abrufen der Kategorien:", error);
       }
-    },
-    mounted() {
-      // Empfang von Nachrichten vom Server
-      this.$socket.on("receiveMessage", (data) => {
-        console.log("Nachricht vom Server:", data);
-      });
-    }
-  };
-  </script>
-  
+    };
+
+    // Spieler wählt eine Kategorie
+    const selectCategory = (category) => {
+      selectedCategory.value = category;
+    };
+
+    // Spieler tritt der Lobby bei
+    const joinLobby = () => {
+      if (!selectedCategory.value) return;
+      console.log('Joining lobby for category:', selectedCategory.value);
+      socket.emit('joinLobby', { category: selectedCategory.value });
+    };
+
+    // Spieler sendet seine Antwort
+    const sendAnswer = (answerIndex) => {
+      if (hasAnswered.value) return; // Verhindert, dass der Spieler erneut antwortet
+      socket.emit('answerQuestion', { lobbyId: lobby.value.id, answer: answerIndex });
+      hasAnswered.value = true; // Markiert, dass der Spieler geantwortet hat
+    };
+
+    // Update der Lobby, wenn ein Spieler beitritt
+    socket.on('lobbyUpdate', (data) => {
+      lobby.value = data;
+    });
+
+    // Quiz wird gestartet
+    socket.on('startQuiz', () => {
+      quizStarted.value = true;
+      socket.emit('requestFirstQuestion', lobby.value.id);
+    });
+
+    // Neue Frage wird empfangen
+    socket.on('newQuestion', (question) => {
+      currentQuestion.value = {
+        question: question.question,
+        options: question.options,
+        correct: question.correct,
+      };
+      answerFeedback.value = '';
+      hasAnswered.value = false; // Setze das Flag zurück, wenn eine neue Frage kommt
+    });
+
+    // Feedback zur Antwort
+    socket.on('answerFeedback', (feedback) => {
+      answerFeedback.value = feedback.message;
+      if (feedback.correct) {
+        score.value += 10;
+      }
+    });
+
+    // Das Spiel ist vorbei
+    socket.on('gameOver', () => {
+      gameOver.value = true;
+    });
+
+    // Kategorien beim Laden der Seite abrufen
+    fetchCategories();
+
+    return {
+      categories,
+      selectedCategory,
+      hasAnswered,
+      lobby,
+      quizStarted,
+      currentQuestion,
+      sendAnswer,
+      answerFeedback,
+      score,
+      gameOver,
+      selectCategory,
+      joinLobby,
+    };
+  },
+};
+</script>
+
+<style scoped>
+button {
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+}
+.selected {
+  background-color: #4caf50;
+  color: white;
+}
+.options {
+  display: flex;
+  flex-direction: column;
+}
+</style>

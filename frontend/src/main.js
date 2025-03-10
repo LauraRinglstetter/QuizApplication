@@ -21,18 +21,9 @@ app.config.globalProperties.$axios = Axios;
 // WebSocket-Verbindung einrichten
 const socket = io("http://localhost:3000"); 
 
-// Event-Listener für die WebSocket-Verbindung
-socket.on("connect", () => {
-    console.log("Mit dem WebSocket-Server verbunden:", socket.id);
-});
 
 // Global verfügbar machen (soll in mehreren Komponeten verfügbar sein)
 app.config.globalProperties.$socket = socket;
-
-// Beispiel: Empfang von Nachrichten
-socket.on("receiveMessage", (data) => {
-    console.log("Nachricht vom Server:", data);
-});
 
 // Benutze den Router und den Store in der App
 app.use(router); // router einbinden
@@ -40,3 +31,5 @@ app.use(store); // store einbinden
 
 // App mounten
 app.mount('#app');
+
+export { socket };
