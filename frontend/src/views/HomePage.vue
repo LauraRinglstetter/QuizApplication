@@ -39,7 +39,7 @@
   },
   methods: {
     getUserData() {
-      const token = localStorage.getItem('token'); // Hole den Token aus localStorage
+      const token = sessionStorage.getItem('token'); // Hole den Token aus localStorage
       if (token) {
         try {
           const decodedToken = jwtDecode(token);// Decodiere den Token

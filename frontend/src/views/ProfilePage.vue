@@ -13,7 +13,7 @@
             <tbody>
                 <tr>
                     <td>{{ username }}</td>
-                    <td>{{ username.score }}</td>
+                    <td>{{ score }}</td>
                 </tr>
             </tbody>
         </table>
@@ -22,13 +22,15 @@
 </template>
 <script>
 import { jwtDecode } from 'jwt-decode'; // Importiere die jwt-decode Bibliothek
+import axios from 'axios'; 
 
 export default {
   name: 'ProfilePage',
   data() {
     return {
       username: '',  // Benutzernamen speichern
-
+      score: 0,      // Punktestand speichern
+      id: '',  // Benutzer-ID speichern
     };
   },
   mounted() {
@@ -36,17 +38,38 @@ export default {
   },
   methods: {
     getUserData() {
-      const token = localStorage.getItem('token'); // Hole den Token aus dem localStorage
+      const token = sessionStorage.getItem('token'); // Ändere von localStorage zu sessionStorage
       if (token) {
         try {
-          const decodedToken = jwtDecode(token); // Decodiere den Token
-          console.log(decodedToken);
+          const decodedToken = jwtDecode(token);
+          console.log("Token-Daten:", decodedToken);
 
-          this.username = decodedToken.username; // Benutzernamen setzen
+          this.username = decodedToken.username;
+          this.id = decodedToken.id;
 
-          this.score = decodedToken.score;       // Falls im Token vorhanden, Punktestand setzen
+          this.fetchScore(); // Score aus der Datenbank holen
         } catch (error) {
           console.error('Fehler beim Decodieren des Tokens:', error);
+        }
+      }
+    },
+    fetchScore() {
+      const token = sessionStorage.getItem('token');
+      if (token) {
+        try {
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken.userId; // Verwende id statt userId
+
+            // API-Aufruf mit userId (id) aus dem Token
+            axios.get(`http://localhost:3000/api/users/score/${userId}`)
+                .then((response) => {
+                    this.score = response.data.score; // Punktestand im State speichern
+                })
+                .catch((error) => {
+                    console.error('Fehler beim Abrufen des Scores:', error);
+                });
+        } catch (error) {
+            console.error('Fehler beim Decodieren des Tokens:', error);
         }
       }
     },

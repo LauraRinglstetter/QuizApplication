@@ -133,9 +133,15 @@ module.exports = (io) => {
 
         // Wenn alle Spieler fertig sind, beenden wir das Spiel
         if (allPlayersAnswered) {
+          const teamScore = Object.values(lobby.scores).reduce((acc, score) => acc + score, 0);
           // Spiel beenden
-          io.to(lobbyId).emit('gameOver', { message: 'Das Spiel ist vorbei!' });
+          io.to(lobbyId).emit('gameOver', { 
+            message: 'Das Spiel ist vorbei!',
+            scores: lobby.scores,
+            teamScore: teamScore
+          });
           console.log('Spiel beendet:', lobby.scores);
+          console.log(`Gesamtpunktzahl des Teams: ${teamScore}`);
         }
           
       }

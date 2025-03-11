@@ -43,8 +43,8 @@
         this.msg = response.message; // Zeige die Erfolgsmeldung oder Fehler an
 
         // Wenn der Login erfolgreich war, weiterleiten oder Token speichern
-        localStorage.setItem('token', response.token); // Speichere den Token in localStorage oder in Vuex
-        localStorage.setItem('username', this.username); 
+        sessionStorage.setItem('token', response.token); // Speichere den Token in localStorage oder in Vuex
+        sessionStorage.setItem('username', this.username); 
         this.$router.push('/home'); // Weiterleiten zur Startseite nach erfolgreichem Login
       } catch (error) {
         console.error('Login-Fehler:', error);

@@ -42,7 +42,10 @@
       <p v-if="answerFeedback">{{ answerFeedback }}</p>
     </div>
 
-    <p v-if="gameOver">Spiel beendet! Dein Score: {{ score }}</p>
+    <p v-if="gameOver">
+      Spiel beendet! Dein Score: {{ score }} <br>
+      Euer gemeinsamer Team-Score: {{ teamScore }}
+    </p>
   </div>
 </template>
 
@@ -62,6 +65,7 @@ export default {
     const answerFeedback = ref('');
     const score = ref(0);
     const gameOver = ref(false);
+    const teamScore = ref(0);
 
     // Abrufen der Kategorien
     const fetchCategories = async () => {
@@ -118,14 +122,36 @@ export default {
     socket.on('answerFeedback', (feedback) => {
       answerFeedback.value = feedback.message;
       if (feedback.correct) {
-        score.value += 10;
+        score.value += 1;
       }
     });
 
     // Das Spiel ist vorbei
-    socket.on('gameOver', () => {
+    socket.on('gameOver', (data) => {
       gameOver.value = true;
+      teamScore.value = data.teamScore; 
+      saveScore(); // Punktestand speichern
     });
+    //Speichert den Punktestand in der Datenbank
+    const saveScore = async () => {
+      try {
+        const username = localStorage.getItem('username');
+
+        if (!username) {
+          console.error('Kein Benutzername gefunden');
+          return;
+        } 
+
+        const response = await axios.put('http://localhost:3000/api/leaderboard', {
+          username,
+          score: score.value, // Berechneter Punktestand
+        });
+
+        console.log('Punktestand gespeichert:', response.data);
+      } catch (error) {
+        console.error('Fehler beim Speichern des Punktestands:', error);
+      }
+    };
 
     // Kategorien beim Laden der Seite abrufen
     fetchCategories();
@@ -140,6 +166,7 @@ export default {
       sendAnswer,
       answerFeedback,
       score,
+      teamScore,
       gameOver,
       selectCategory,
       joinLobby,

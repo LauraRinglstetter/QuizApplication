@@ -32,7 +32,7 @@ export default {
   computed: {
     // Überprüft, ob der Benutzer eingeloggt ist, basierend auf dem Vorhandensein eines Tokens im localStorage
     isLoggedIn() {
-      return !!localStorage.getItem('token');
+      return !!sessionStorage.getItem('token');
     }
   },
   methods: {

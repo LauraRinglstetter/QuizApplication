@@ -200,5 +200,29 @@ router.get('/leaderboard', (req, res) => {
     });
   });
 
+// API-Endpunkt für das Abrufen des Punktestands des Benutzers
+router.get('/users/score/:id', (req, res) => {
+    const userId = req.params.id; // id aus der URL extrahieren
+
+    // SQL-Abfrage zum Abrufen des Benutzers anhand der id
+    const query = 'SELECT score FROM users WHERE id = ?'; // Verwende `id` als Spaltenname
+
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Fehler bei der Datenbankabfrage:', err);
+            return res.status(500).json({ message: 'Fehler beim Abrufen des Scores' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'Benutzer nicht gefunden' });
+        }
+
+        // Benutzer gefunden, Punktestand zurückgeben
+        const score = results[0].score;
+        res.json({ score });
+    });
+});
+
+
 
 module.exports = router;
