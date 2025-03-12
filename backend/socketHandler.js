@@ -83,6 +83,41 @@ module.exports = (io) => {
         console.log('Fragen zugewiesen:', evenQuestions);
       });
     }
+    socket.on("sendQuestionToTeammate", ({ lobbyId, question }) => {
+      const lobby = lobbies[lobbyId];
+      if (!lobby) return;
+    
+      // Empfänger ist der andere Spieler in der Lobby
+      const recipientId = lobby.players.find(playerId => playerId !== socket.id);
+      
+      if (recipientId) {
+        io.to(recipientId).emit("receiveQuestionFromTeammate", question);
+        console.log(`Frage an Spieler ${recipientId} gesendet:`, question);
+        requestNextQuestion(socket, lobbyId);
+      }
+    });
+    // Abrufen der nächsten Frage
+    const requestNextQuestion = (socket, lobbyId) => {
+      const lobby = lobbies[lobbyId];
+      if (!lobby) return;
+
+      const playerQuestions = lobby.questions[socket.id];
+      const currentQuestionIndex = lobby.currentQuestionIndex[socket.id];
+
+      const nextQuestionIndex = currentQuestionIndex + 1;
+      if (nextQuestionIndex < playerQuestions.length) {
+        lobby.currentQuestionIndex[socket.id] = nextQuestionIndex;
+        const nextQuestion = playerQuestions[nextQuestionIndex];
+
+        socket.emit("newQuestion", {
+          question: nextQuestion.question,
+          options: JSON.parse(nextQuestion.options),
+          correct: nextQuestion.answer
+        });
+      } else {
+        console.log(`Spieler ${socket.id} hat keine weiteren Fragen.`);
+      }
+    };
 
     // Spieler antwortet auf eine Frage
     socket.on('answerQuestion', (data) => {
@@ -146,6 +181,7 @@ module.exports = (io) => {
           
       }
     });
+
 
     socket.on('disconnect', () => {
       console.log(`Spieler ${socket.id} hat das Spiel verlassen`);

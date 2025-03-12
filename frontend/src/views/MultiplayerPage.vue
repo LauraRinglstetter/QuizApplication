@@ -39,6 +39,22 @@
           {{ option }}
         </button>
       </div>
+      <button v-if="quizStarted && !hasAnswered" @click="sendQuestionToTeammate">
+        Frage an Mitspieler senden
+      </button>
+
+      <div v-if="receivedQuestion">
+        <h2>Frage von deinem Mitspieler:</h2>
+        <h3>{{ receivedQuestion.question }}</h3>
+        <div class="options">
+          <button 
+            v-for="(option, index) in receivedQuestion.options" 
+            :key="index" 
+            @click="sendReceivedAnswer(index)">
+            {{ option }}
+          </button>
+        </div>
+      </div>
       <p v-if="answerFeedback">{{ answerFeedback }}</p>
     </div>
 
@@ -66,6 +82,7 @@ export default {
     const score = ref(0);
     const gameOver = ref(false);
     const teamScore = ref(0);
+    const receivedQuestion = ref(null); // Für empfangene Fragen
 
     // Abrufen der Kategorien
     const fetchCategories = async () => {
@@ -95,6 +112,15 @@ export default {
       socket.emit('answerQuestion', { lobbyId: lobby.value.id, answer: answerIndex });
       hasAnswered.value = true; // Markiert, dass der Spieler geantwortet hat
     };
+    // Spieler antwortet auf eine empfangene Frage
+    const sendReceivedAnswer = (answerIndex) => {
+      if (!receivedQuestion.value) return; // Falls keine empfangene Frage vorhanden ist
+      socket.emit('answerQuestion', { 
+        lobbyId: lobby.value.id, 
+        answer: answerIndex 
+      });
+      receivedQuestion.value = null; // Entfernt die Frage nach der Antwort
+    };
 
     // Update der Lobby, wenn ein Spieler beitritt
     socket.on('lobbyUpdate', (data) => {
@@ -118,6 +144,19 @@ export default {
       hasAnswered.value = false; // Setze das Flag zurück, wenn eine neue Frage kommt
     });
 
+    // Frage an Mitspieler senden
+    const sendQuestionToTeammate = () => {
+      socket.emit("sendQuestionToTeammate", { 
+        lobbyId: lobby.value.id, 
+        question: currentQuestion.value 
+      });
+    };
+
+    // Empfangene Frage speichern
+    socket.on("receiveQuestionFromTeammate", (question) => {
+      receivedQuestion.value = question;
+    });
+
     // Feedback zur Antwort
     socket.on('answerFeedback', (feedback) => {
       answerFeedback.value = feedback.message;
@@ -135,7 +174,7 @@ export default {
     //Speichert den Punktestand in der Datenbank
     const saveScore = async () => {
       try {
-        const username = localStorage.getItem('username');
+        const username = sessionStorage.getItem('username');
 
         if (!username) {
           console.error('Kein Benutzername gefunden');
@@ -170,6 +209,9 @@ export default {
       gameOver,
       selectCategory,
       joinLobby,
+      sendQuestionToTeammate, // ← Hier hinzufügen!
+      receivedQuestion,
+      sendReceivedAnswer,
     };
   },
 };
