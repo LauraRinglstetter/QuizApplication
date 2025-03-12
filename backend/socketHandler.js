@@ -93,6 +93,9 @@ module.exports = (io) => {
       if (recipientId) {
         io.to(recipientId).emit("receiveQuestionFromTeammate", question);
         console.log(`Frage an Spieler ${recipientId} gesendet:`, question);
+        // Hier wird nur der Index des Spielers erhöht, nicht sofort das GameOver ausgelöst
+        //const nextQuestionIndex = lobby.currentQuestionIndex[socket.id] + 1;
+        //lobby.currentQuestionIndex[socket.id] = nextQuestionIndex;
         requestNextQuestion(socket, lobbyId);
       }
     });
@@ -129,6 +132,12 @@ module.exports = (io) => {
 
       const playerQuestions = lobby.questions[socket.id];
       const currentQuestionIndex = lobby.currentQuestionIndex[socket.id];
+
+      // Überprüfen, ob der Index gültig ist
+      if (currentQuestionIndex >= playerQuestions.length) {
+        console.error(`Der Index ${currentQuestionIndex} ist außerhalb der Fragenliste für Spieler ${socket.id}.`);
+        return; // Verhindern, dass wir auf eine nicht existierende Frage zugreifen
+      }
       const correctAnswer = playerQuestions[currentQuestionIndex].answer; // Die richtige Antwort
       console.log(playerQuestions[currentQuestionIndex]);
       console.log('Richtige Antwort:', correctAnswer); // Diese Zeile sollte jetzt die richtige Antwort zeigen
