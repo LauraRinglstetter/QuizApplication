@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <div v-if="quizStarted">
+    <div class="quiz-form" v-if="quizStarted">
       <h2>{{ currentQuestion.question }}</h2>
       <div class="options">
         <button 
@@ -39,9 +39,11 @@
           {{ option }}
         </button>
       </div>
+    
       <button v-if="quizStarted && !hasAnswered" @click="sendQuestionToTeammate">
         Frage an Mitspieler senden
       </button>
+      <button v-if="showNextButton" @click="requestNextQuestion">Nächste Frage</button>
 
       <div v-if="receivedQuestion">
         <h2>Frage von deinem Mitspieler:</h2>
@@ -74,6 +76,7 @@ export default {
   setup() {
     const categories = ref([]); // Kategorien aus der Datenbank
     const selectedCategory = ref(null);
+    const showNextButton = ref(false); // Button zum Fortfahren
     const hasAnswered = ref(false); // Flag, das überprüft, ob der Spieler bereits geantwortet hat
     const lobby = ref(null);
     const quizStarted = ref(false);
@@ -105,12 +108,17 @@ export default {
       console.log('Joining lobby for category:', selectedCategory.value);
       socket.emit('joinLobby', { category: selectedCategory.value });
     };
+    const requestNextQuestion = () => {
+      showNextButton.value = false; // Button ausblenden
+      socket.emit("requestNextQuestion", lobby.value.id);
+    };
 
     // Spieler sendet seine Antwort
     const sendAnswer = (answerIndex) => {
       if (hasAnswered.value) return; // Verhindert, dass der Spieler erneut antwortet
       socket.emit('answerQuestion', { lobbyId: lobby.value.id, answer: answerIndex });
       hasAnswered.value = true; // Markiert, dass der Spieler geantwortet hat
+      showNextButton.value = true; 
     };
     // Spieler antwortet auf eine empfangene Frage
     const sendReceivedAnswer = (answerIndex) => {
@@ -120,6 +128,7 @@ export default {
         answer: answerIndex 
       });
       receivedQuestion.value = null; // Entfernt die Frage nach der Antwort
+      showNextButton.value = true;
     };
 
     // Update der Lobby, wenn ein Spieler beitritt
@@ -142,6 +151,7 @@ export default {
       };
       answerFeedback.value = '';
       hasAnswered.value = false; // Setze das Flag zurück, wenn eine neue Frage kommt
+      showNextButton.value = false;
     });
 
     // Frage an Mitspieler senden
@@ -212,6 +222,8 @@ export default {
       sendQuestionToTeammate, // ← Hier hinzufügen!
       receivedQuestion,
       sendReceivedAnswer,
+      showNextButton, // ⬅ Wichtig für den Button
+      requestNextQuestion, 
     };
   },
 };
@@ -229,6 +241,17 @@ button {
 }
 .options {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; 
+}
+.quiz-form {
+  margin: 10% auto;
+  width: 70%;
+  background-color: #f4f5f5;
+  padding: 3rem;
+}
+.quiz-form button{
+  border-radius: 5px;
+  background-color: #fff;
+  border:1px solid #000;
 }
 </style>

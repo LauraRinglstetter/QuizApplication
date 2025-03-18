@@ -16,7 +16,15 @@ module.exports = (io) => {
 
       if (!lobbyId) {
         lobbyId = 'lobby_' + Math.floor(Math.random() * 1000);
-        lobbies[lobbyId] = { id: lobbyId, players: [], scores: {}, currentQuestionIndex: { [socket.id]: 0 }, category: category, questions: {} };
+        lobbies[lobbyId] = { 
+          id: lobbyId, 
+          players: [], 
+          scores: {}, 
+          currentQuestionIndex: { [socket.id]: 0 }, 
+          category: category, 
+          questions: {},
+          forwardedQuestions: {} // Hier werden die weitergeleiteten Fragen gespeichert
+        };
       }
 
       lobbies[lobbyId].players.push(socket.id);
@@ -96,7 +104,14 @@ module.exports = (io) => {
         // Hier wird nur der Index des Spielers erhöht, nicht sofort das GameOver ausgelöst
         //const nextQuestionIndex = lobby.currentQuestionIndex[socket.id] + 1;
         //lobby.currentQuestionIndex[socket.id] = nextQuestionIndex;
+        lobby.forwardedQuestions[recipientId] = true;
+
+        console.log(`DEBUG: Spieler ${recipientId} hat eine weitergeleitete Frage erhalten.`);
+
         requestNextQuestion(socket, lobbyId);
+        // Erst die Frage senden, aber den Index nicht sofort erhöhen
+        console.log(`Frage wurde an Spieler ${recipientId} gesendet, warte auf Antwort.`);
+
       }
     });
     // Abrufen der nächsten Frage
@@ -152,7 +167,11 @@ module.exports = (io) => {
       // Feedback senden
       socket.emit('answerFeedback', { message: correct ? 'Richtig!' : 'Falsch!', correct });
 
-      // Nächste Frage für den Spieler senden
+      if(lobby.forwardedQuestions[socket.id]){
+        console.log(`DEBUG: Spieler ${socket.id} beantwortet eine weitergeleitete Frage.`);
+        delete lobby.forwardedQuestions[socket.id]; // Entfernen, da sie beantwortet wurde
+      } else{
+        // Nächste Frage für den Spieler senden
       const nextQuestionIndex = currentQuestionIndex + 1;
       if (nextQuestionIndex < playerQuestions.length) {
         // Nächste Frage für diesen Spieler
@@ -189,6 +208,8 @@ module.exports = (io) => {
         }
           
       }
+      }
+      
     });
 
 
