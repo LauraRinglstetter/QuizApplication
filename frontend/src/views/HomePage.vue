@@ -2,7 +2,7 @@
     <div>
       <p v-if="username">Willkommen zurück, {{ username }}!</p>
       <h1>Dein Dashboard</h1>
-      <div class="categories">
+      <div class="categories-dashboard">
         <div class="quiz-general">
           <p> Erweitere deine Kenntnisse und starte ein Quiz!</p>
           <div class="buttons">
@@ -83,7 +83,7 @@
   text-decoration: none;
   font-size: 18px;
 }
-.categories{
+.categories-dashboard{
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
@@ -91,7 +91,7 @@
   margin: 2rem auto;
   gap: 2rem;
 }
-.categories > div {
+.categories-dashboard > div {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   padding: 2rem 1rem;
@@ -107,6 +107,25 @@
 }
 p{
   color: #000;
+}
+
+@media(max-width:1150px){
+  .categories-dashboard{
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    width: 90%;
+  }
+  .categories-dashboard > div{
+    padding: 1rem;
+  }
+}
+@media(max-width:600px){
+  .categories-dashboard{
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    width: 95%;
+  }
+
 }
 </style>
   

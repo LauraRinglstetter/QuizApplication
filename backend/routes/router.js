@@ -20,9 +20,7 @@ router.post('/register', userMiddleware.validateRegister, (req, res, next) => {
         }
 
         if (result.length) {
-            return res.status(409).send({
-                message: "This username is already in use",
-            });
+            return res.status(409).send("Der Benutzername ist bereits vergeben");
         } else {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 if (err) {

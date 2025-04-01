@@ -12,7 +12,7 @@
     </nav>
 
     <!-- Hier wird die aktive Route angezeigt -->
-    <router-view></router-view> 
+    <div class="main"><router-view></router-view> </div>
     <!-- <h2>Teste die Verbindung zum Backend</h2>
     <button @click="getDataFromBackend">Daten vom Backend abrufen</button>
     <p v-if="message">{{ message }}</p> Nachricht vom Backend anzeigen -->
@@ -26,16 +26,16 @@ export default {
   name: 'App',
   data() {
     return {
-      message: '' // Hier speichern wir die Nachricht vom Backend
+      message: '', // Hier speichern wir die Nachricht vom Backend
+      isLoggedIn: false // Initialer Status des Benutzers
     }
   },
-  computed: {
-    // Überprüft, ob der Benutzer eingeloggt ist, basierend auf dem Vorhandensein eines Tokens im localStorage
-    isLoggedIn() {
-      return !!sessionStorage.getItem('token');
-    }
-  },
+
   methods: {
+    checkLoginStatus() {
+      // Überprüfe, ob der Token im sessionStorage vorhanden ist
+      this.isLoggedIn = !!sessionStorage.getItem('token');
+    },
     async getDataFromBackend() {
       try {
         const response = await axios.get('http://localhost:3000/api/test') // API-Call zum Backend
@@ -46,12 +46,23 @@ export default {
     },
     // Logout-Funktion: Entfernt das Token aus dem localStorage und leitet den Benutzer zur Startseite um
     logout() {
-      localStorage.removeItem('token'); // Entfernt das Token aus dem localStorage
+      sessionStorage.removeItem('token'); // Entfernt das Token aus dem localStorage
+      this.isLoggedIn = false; 
       this.$router.push('/'); // Weiterleitung zur Login-Seite
     },
     goToProfile() {
       this.$router.push('/profile'); 
     }
+  },
+  watch: {
+    // Überwacht den Status von sessionStorage und aktualisiert `isLoggedIn`
+    '$route'() {
+      this.checkLoginStatus();
+    }
+  },
+  mounted() {
+    // Überprüft den Login-Status beim ersten Laden der Seite
+    this.checkLoginStatus();
   }
 }
 </script>
@@ -75,6 +86,9 @@ body, html{
   width: 100%;
 
 }
+.main{
+  margin-top: 140px;
+}
 .nav{
   width: 100%;
   background-color: 	#f4f5f5;
@@ -83,12 +97,15 @@ body, html{
   gap: 2em;
   justify-content: flex-end;
   align-items:center;
-  position:relative;
+  position:fixed;
+  z-index:10;
+  height: 130px;
+  top: 0;
 }
 .nav > p{
   text-decoration: none;
-  color: #0aa6d7;
-  border: 1px solid #0aa6d7;
+  color: #546A7B;
+  border: 1px solid #546A7B;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   height: fit-content;
@@ -100,6 +117,9 @@ body, html{
   flex-direction:column;
   align-items:flex-start;
   margin: 1rem auto 1rem 0;
+  position: absolute;
+  top: auto;
+  left: 1rem;
 }
 .nav > p:first-of-type span{
   font-weight: normal;
@@ -115,8 +135,27 @@ body, html{
   cursor: pointer;
 }
 .exit{
-    margin: 1rem 0 0 3em;
+    margin: 1rem auto;
+    margin-left: 2rem;
     display:block;
     width:fit-content;
+    text-decoration: none;
+    border: 1px solid #000;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
 }
+
+/*Responsive Design*/
+@media(max-width: 540px){
+  .nav{
+    padding: 0.5em;
+    gap: 0.5em;
+  }
+  .nav > p:first-of-type{
+    font-size: 1rem;
+    margin: 0;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
 </style>

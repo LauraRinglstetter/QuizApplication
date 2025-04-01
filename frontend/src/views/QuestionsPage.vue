@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container-questions">
         <router-link to="/home" class="exit button">Zurück zum Dashboard</router-link>
         <h1>Fragenkataloge</h1>
         <p>Erstelle eine neue Kategorie oder erweitere Fragen in den bisherigen Kategorien!</p>
@@ -19,11 +19,16 @@
         />
         <button @click="addCategory" class="add-category-submit">Hinzufügen</button>
         </div>
+        <!-- Fehlermeldung anzeigen -->
+        <div v-if="errorMessage" class="error-message">
+            {{ errorMessage }}
+        </div>
         <div class="overview">
             <div v-for="category in allCategories" :key="category" class="category">
               <h3>{{ category }}</h3>
               <span @click="selectCategory(category)" class="question-button">Neue Frage hinzufügen</span>  
-              <span @click="seeAllQuestions(category)" class="question-button">Alle Fragen anzeigen</span>             
+              <span @click="seeAllQuestions(category)" class="question-button">Alle Fragen anzeigen</span>     
+              <span v-if="isTemporaryCategory(category)" @click="deleteCategory(category)" class="delete-button">🗑 Löschen</span>        
             </div> 
         </div>
         <!-- Fragen anzeigen -->
@@ -47,10 +52,7 @@
         <div v-if="successMessage" class="success-message">
             {{ successMessage }}
         </div>
-        <!-- Fehlermeldung anzeigen -->
-        <div v-if="errorMessage" class="error-message">
-            {{ errorMessage }}
-        </div>
+        
 
         <!-- Formular für das Hinzufügen von Fragen -->
         <div v-if="selectedCategory" class="question-form" ref="questionForm">
@@ -152,6 +154,16 @@ export default {
         this.clearMessages();
         return;
       }
+      const newCategoryLower = this.newCategory.trim().toLowerCase();
+
+        // Überprüfen, ob die Kategorie bereits existiert (unabhängig von Groß-/Kleinschreibung)
+        const categoryExists = this.allCategories.some(cat => cat.toLowerCase() === newCategoryLower);
+
+        if (categoryExists) {
+            this.errorMessage = "Diese Kategorie existiert bereits!";
+            this.clearMessages();
+            return;
+        }
 
       // Füge die neue Kategorie zu den temporären Kategorien hinzu
       this.temporaryCategories.push(this.newCategory);
@@ -175,6 +187,24 @@ export default {
           this.$refs.questionForm.scrollIntoView({ behavior: "smooth" });
         }
       });
+    },
+    // Prüft, ob die Kategorie aus dem localStorage stammt
+    isTemporaryCategory(category) {
+        return this.temporaryCategories.includes(category);
+    },
+
+    // Löscht eine Kategorie, wenn sie nur temporär (also im localStorage) gespeichert ist
+    deleteCategory(category) {
+        if (!this.isTemporaryCategory(category)) return; // Falls die Kategorie in der DB ist, nichts tun
+
+        // Entferne die Kategorie aus dem Array
+        this.temporaryCategories = this.temporaryCategories.filter(cat => cat !== category);
+
+        // Aktualisiere localStorage
+        localStorage.setItem("temporaryCategories", JSON.stringify(this.temporaryCategories));
+
+        this.successMessage = "Kategorie wurde gelöscht.";
+        this.clearMessages();
     },
     
     // Methode zum Hinzufügen einer neuen Frage
@@ -216,26 +246,29 @@ export default {
 };
 </script>
 <style scoped>
+.container-questions{
+  margin-top: 30px;
+}
 .overview{
     display: flex;
+    flex-wrap:wrap;
     justify-content: center;
     gap: 2rem;
     width: 90%;
     margin: 4rem auto;
 }
 .overview > div{
-    width: 35%;
+    width: 30%;
     padding: 4rem 1rem ;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    background-color: #fff;
+    background-color: rgba(84, 106, 123, 0.2);
     color: #000;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1rem;
     cursor: pointer;
 }
-div > button, div > a{
-    background-color: #0aa6d7;
+div > button{
+    background-color: #546A7B;
     color: #fff;
     border: none;
     padding: 0.5rem 1rem;
@@ -288,11 +321,9 @@ div > button, div > a{
     border-radius: 10px;
     cursor: pointer;
     display:block;
-    border: 1px solid #000;
     margin: 1rem auto;
-}
-.question-button:hover{
-    background-color: #f4f5f5;
+    background-color: #546A7B;
+    color: #fff;
 }
 .question-item {
   list-style: none;
@@ -305,5 +336,16 @@ div > button, div > a{
 .options-list {
   list-style: none;
   padding-left: 0;
+}
+@media(max-width: 1000px){
+  .overview .category{
+    width: 45%;
+  }
+}
+@media(max-width: 580px){
+  .overview .category{
+    width: 90%;
+    padding: 1rem;
+  }
 }
 </style>

@@ -49,9 +49,10 @@ p{
 }
 .buttons{
     display:flex;
+    flex-wrap:wrap;
     gap: 20px;
     justify-content:center;
-    margin-top: 5%;
+    margin: 5%;
 }
 button{
     background-color: #f4f5f5;
@@ -60,5 +61,11 @@ button{
     border-radius: 5px;
     cursor:pointer;
     font-size: 20px;
+    flex:1;
+}
+@media(max-width:1050px){
+    button{
+        padding: 2rem 2.5rem;
+    }
 }
 </style>

@@ -64,8 +64,9 @@ export default {
 <style scoped>
 .registerBox{
   width: 30%;
-  min-width: 300px;
+  min-width: 350px;
   margin: auto auto;
+  margin-top: 130px;
   border: 1px solid #000;
   padding: 1em 1em 2em 1em;
   background-color: #fff;

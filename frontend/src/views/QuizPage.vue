@@ -25,7 +25,12 @@
             getCurrentQuestion.selected !== null && index !== getCurrentQuestion.selected 
               ? ' disabled' 
               : ''
-            }`">
+            }${
+              index === getCurrentQuestion.answer && getCurrentQuestion.selected !== null
+                ? ' correct'
+                : ''
+              }
+            `">
             <input 
               type="radio" 
               :name="getCurrentQuestion.index" 
@@ -46,12 +51,13 @@
             : 'Nächste Frage' 
         }}
         </button>
-        <router-link to="/categories" class="exit">Quiz abbrechen</router-link>
+        <router-link to="/categories" class="stop-quiz">Quiz abbrechen</router-link>
       </section>
   
       <section v-else>
         <div class="quiz-end">
-          <h2>Herzlichen Glückwunsch, du hast das Quiz abgeschlossen!</h2>
+          <h2 v-if="timeExpired">Oops, die Zeit ist abgelaufen!</h2>
+          <h2 v-else>Herzlichen Glückwunsch, du hast das Quiz abgeschlossen!</h2>
           <h3>Dein Punktestand:  {{ score }} / {{ questions.length }}</h3>
         </div>
         <button @click="goToHome">Zurück zur Startseite</button>
@@ -68,6 +74,7 @@ const route = useRoute();
 const router = useRouter();
 // Timer für das Quiz
 let timer = ref(90);
+const timeExpired = ref(false);
 
 let timerInterval = null;
 
@@ -97,6 +104,7 @@ const formattedTime = computed(() => {
 // Methode, um das Quiz zu beenden
 const endQuiz = () => {
   quizCompleted.value = true;
+  timeExpired.value = true; // Zeit abgelaufen
   saveScore(); // Punktestand speichern
   stopTimer(); // Timer stoppen
 };
@@ -217,7 +225,6 @@ body{
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  height: calc(100vh - 120px);
   width:100%;
 }
 h1{
@@ -234,15 +241,18 @@ h1{
 }
 .quiz-info{
   display:flex;
+  flex-wrap: wrap;
   justify-content:space-between;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 .quiz-info .question{
   font-size: 1.2rem;
 }
 .quiz-info .score{
-  font-size: 1.25rem;
+  font-size: 1rem;
+  font-style:italic;
 }
 .options{
   margin-bottom:1rem;
@@ -307,6 +317,14 @@ button:disabled{
 .quiz-end{
   margin-bottom: 1rem;
 }
-  
+.stop-quiz{
+    margin: 3rem auto 1rem auto;
+    display:block;
+    width:fit-content;
+    text-decoration: none;
+    border: 1px solid #000;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
 
 </style>

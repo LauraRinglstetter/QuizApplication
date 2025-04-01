@@ -1,5 +1,6 @@
 <template>
     <div>
+        <router-link to="/home" class="exit">Zurück zum Dashboard</router-link>
         <h1>Leaderboard</h1>
         <table>
             <thead>
@@ -17,7 +18,7 @@
                 </tr>
             </tbody>
         </table> 
-        <router-link to="/home" class="back">Zurück zum Dashboard</router-link>
+        
     </div>
 </template>
 <script>

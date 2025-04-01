@@ -65,16 +65,19 @@
 <style>
 .container{
   width: 100%;
-  height: calc(100vh - 100px);
+  height: 100vh;;
   background-image: url('../assets/background-image.jpg');
   background-size:cover;
   display:flex;
   flex-direction:column;
+  position:absolute;
+  top: 0;
 }
 .loginBox{
   width: 30%;
-  min-width: 300px;
+  min-width: 350px;
   margin: auto auto;
+  margin-top: 130px;
   border: 1px solid #000;
   padding: 1em 1em 2em 1em;
   background-color: #fff;
@@ -88,6 +91,17 @@ form{
 .register-text{
   margin-top: 2em;
 }
+.register-text a{
+  display:block;
+  color: #000;
+  text-decoration: none;
+  border: 1px solid #000;
+  border-radius: 5px;
+  width: fit-content;
+  padding: 0.5em 1em;
+  margin: 0.5em auto;
+}
+
 form > input{
   font-size: 16px;
   padding: 5px;

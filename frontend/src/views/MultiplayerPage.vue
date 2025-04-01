@@ -2,10 +2,12 @@
   <div>
     <router-link to="/home" class="exit button">Zurück zum Dashboard</router-link>
     <h1>Multiplayer-Quiz</h1>
-    <p>Wähle eine Kategorie aus, um das Quiz zu starten</p>
     
-    <div class="overview buttons">
-      <button 
+    
+    <div v-if="!selectedCategory">
+      <p>Wähle eine Kategorie aus, um das Quiz zu starten</p>
+      <div class="overview buttons">
+        <button 
         v-for="category in categories" 
         :key="category" 
         class="category" 
@@ -13,11 +15,12 @@
         :class="{ selected: selectedCategory === category }">
         {{ category }}         
       </button> 
+      </div>
     </div>
     
     <button v-if="!lobby && selectedCategory" @click="joinLobby">Quiz starten</button>
 
-    <div v-if="lobby">
+    <div v-if="lobby && !quizCompleted">
       <p>Lobby-ID: {{ lobby.id }}</p>
       <p>Spieler in der Lobby: {{ lobby.players.length }} / 2</p>
       <div v-if="lobby.players.length < 2">
@@ -28,7 +31,7 @@
       </div>
     </div>
 
-    <div class="quiz-form" v-if="quizStarted">
+    <div class="quiz-form" v-if="quizStarted && !quizCompleted">
       <h2>{{ currentQuestion.question }}</h2>
       <div class="options">
         <button 
@@ -60,10 +63,27 @@
       <p v-if="answerFeedback">{{ answerFeedback }}</p>
     </div>
 
-    <p v-if="gameOver">
-      Spiel beendet! Dein Score: {{ score }} <br>
-      Euer gemeinsamer Team-Score: {{ teamScore }}
-    </p>
+    <div v-if="gameOver">
+      <h3>Herzlichen Glückwunsch!</h3>
+      <p>
+        Ihr habt das Spiel beendet! Dein Score: {{ score }} <br>
+        Euer gemeinsamer Team-Score: {{ teamScore }}
+      </p>
+      <h2>Übersicht der gestellten Fragen</h2>
+      <div class="answered-questions" v-for="(q, index) in answeredQuestions" :key="index">
+        <h3>Frage {{ index + 1 }}: {{ q.question }}</h3>
+        <ul>
+          <li 
+            v-for="(option, i) in q.options" 
+            :key="i" 
+            :style="{ color: i === q.correct ? 'green' : 'black', fontWeight: (i === q.correct || i === q.selected) ? 'bold' : 'normal' }">
+            {{ option }}
+            <span v-if="i === q.correct" style="color: green;">✔️</span>
+            <span v-if="i === q.selected && i !== q.correct" style="color: red;">❌</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -86,6 +106,9 @@ export default {
     const gameOver = ref(false);
     const teamScore = ref(0);
     const receivedQuestion = ref(null); // Für empfangene Fragen
+    const quizCompleted = ref(false); //Ist Quiz abgeschlossen?
+    const askedQuestions = ref([]); // Speichert alle Fragen, die bereits gestellt wurden
+    const answeredQuestions = ref([]); // Speichert alle beantworteten Fragen
 
     // Abrufen der Kategorien
     const fetchCategories = async () => {
@@ -117,6 +140,12 @@ export default {
     const sendAnswer = (answerIndex) => {
       if (hasAnswered.value) return; // Verhindert, dass der Spieler erneut antwortet
       socket.emit('answerQuestion', { lobbyId: lobby.value.id, answer: answerIndex });
+      answeredQuestions.value.push({
+        question: currentQuestion.value.question,
+        options: currentQuestion.value.options,
+        correct: currentQuestion.value.correct,
+        selected: answerIndex, // Speichert, was der Nutzer gewählt hat
+      });
       hasAnswered.value = true; // Markiert, dass der Spieler geantwortet hat
       showNextButton.value = true; 
     };
@@ -149,6 +178,9 @@ export default {
         options: question.options,
         correct: question.correct,
       };
+      // Speichert jede neue Frage in askedQuestions
+      askedQuestions.value.push(currentQuestion.value);
+
       answerFeedback.value = '';
       hasAnswered.value = false; // Setze das Flag zurück, wenn eine neue Frage kommt
       showNextButton.value = false;
@@ -180,7 +212,9 @@ export default {
       gameOver.value = true;
       teamScore.value = data.teamScore; 
       saveScore(); // Punktestand speichern
+      quizCompleted.value = true;
     });
+
     //Speichert den Punktestand in der Datenbank
     const saveScore = async () => {
       try {
@@ -224,6 +258,9 @@ export default {
       sendReceivedAnswer,
       showNextButton, // ⬅ Wichtig für den Button
       requestNextQuestion, 
+      quizCompleted,
+      askedQuestions,
+      answeredQuestions,
     };
   },
 };
@@ -244,14 +281,52 @@ button {
   flex-direction: column; 
 }
 .quiz-form {
-  margin: 10% auto;
-  width: 70%;
-  background-color: #f4f5f5;
-  padding: 3rem;
+  background-color: rgba(84, 106, 123, 0.2);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 640px;
+  border-radius: 10px;
+  color: #000;
+  margin: 1em auto;
 }
 .quiz-form button{
-  border-radius: 5px;
+  cursor:pointer;
+  background-color: #546A7B;
+  padding: 0.8rem;
+  color: #fff;
+}
+ 
+.answered-questions {
+  border: 1px solid #000;
+  padding: 1rem;
+  width: 90%;
+  margin: 1em auto;
+}
+.answered-questions ul{
+  list-style: none;
+}
+.answered-questions ul li, .answered-questions h3{
+  text-align:left;
+}
+.category{
   background-color: #fff;
-  border:1px solid #000;
+  border: 1px solid #000;
+  border-radius: 5px;
+}
+.overview{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 20px;
+    justify-content:center;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+.category{
+    background-color: #f4f5f5;
+    border: none;
+    padding: 5rem 7rem;
+    border-radius: 5px;
+    cursor:pointer;
+    font-size: 20px;
 }
 </style>
