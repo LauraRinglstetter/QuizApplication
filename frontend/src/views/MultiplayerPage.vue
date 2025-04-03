@@ -18,7 +18,7 @@
       </div>
     </div>
     
-    <button v-if="!lobby && selectedCategory" @click="joinLobby">Quiz starten</button>
+    <button v-if="!lobby && selectedCategory" @click="joinLobby" class="quiz-start">Quiz starten</button>
 
     <div v-if="lobby && !quizCompleted">
       <p>Lobby-ID: {{ lobby.id }}</p>
@@ -31,23 +31,40 @@
       </div>
     </div>
 
-    <div class="quiz-form" v-if="quizStarted && !quizCompleted">
-      <h2>{{ currentQuestion.question }}</h2>
-      <div class="options">
+
+    <div class="quiz-form" v-if="quizStarted && !quizCompleted ">
+      <h2 v-if="!playerFinishedMessage">{{ currentQuestion.question }}</h2>
+      <div class="options" v-if="!playerFinishedMessage">
         <button 
           v-for="(option, index) in currentQuestion.options" 
           :key="index" 
           @click="sendAnswer(index)"
-          :disabled="hasAnswered">
+          :class="[
+            // Die richtige Antwort bekommt immer die Klasse 'correct', auch wenn sie nicht ausgewählt wurde
+            currentQuestion.selected !== undefined && index === currentQuestion.correct ? 'correct' : '', 
+
+            // Wenn der Spieler eine Antwort gewählt hat und es die falsche Antwort war, bekommt sie 'wrong'
+            currentQuestion.selected !== undefined && index === currentQuestion.selected && index !== currentQuestion.correct ? 'wrong' : '', 
+
+            // Alle Buttons werden disabled, sobald der Spieler eine Antwort gewählt hat
+            currentQuestion.selected !== undefined ? 'disabled' : '' 
+          ]">
           {{ option }}
         </button>
       </div>
+
     
-      <button v-if="quizStarted && !hasAnswered" @click="sendQuestionToTeammate">
+      <button v-if="quizStarted && !hasAnswered && !playerFinishedMessage"  @click="sendQuestionToTeammate">
         Frage an Mitspieler senden
       </button>
-      <button v-if="showNextButton" @click="requestNextQuestion">Nächste Frage</button>
-
+      <button 
+        v-if="hasAnswered" 
+        @click="requestNextQuestion">
+          Nächste Frage
+      </button>
+      <div v-if="playerFinishedMessage">
+        <h3>{{ playerFinishedMessage }}</h3>
+      </div>
       <div v-if="receivedQuestion">
         <h2>Frage von deinem Mitspieler:</h2>
         <h3>{{ receivedQuestion.question }}</h3>
@@ -62,6 +79,7 @@
       </div>
       <p v-if="answerFeedback">{{ answerFeedback }}</p>
     </div>
+    
 
     <div v-if="gameOver">
       <h3>Herzlichen Glückwunsch!</h3>
@@ -72,6 +90,7 @@
       <h2>Übersicht der gestellten Fragen</h2>
       <div class="answered-questions" v-for="(q, index) in answeredQuestions" :key="index">
         <h3>Frage {{ index + 1 }}: {{ q.question }}</h3>
+
         <ul>
           <li 
             v-for="(option, i) in q.options" 
@@ -96,7 +115,6 @@ export default {
   setup() {
     const categories = ref([]); // Kategorien aus der Datenbank
     const selectedCategory = ref(null);
-    const showNextButton = ref(false); // Button zum Fortfahren
     const hasAnswered = ref(false); // Flag, das überprüft, ob der Spieler bereits geantwortet hat
     const lobby = ref(null);
     const quizStarted = ref(false);
@@ -109,6 +127,7 @@ export default {
     const quizCompleted = ref(false); //Ist Quiz abgeschlossen?
     const askedQuestions = ref([]); // Speichert alle Fragen, die bereits gestellt wurden
     const answeredQuestions = ref([]); // Speichert alle beantworteten Fragen
+    const playerFinishedMessage = ref(null); 
 
     // Abrufen der Kategorien
     const fetchCategories = async () => {
@@ -124,7 +143,6 @@ export default {
     const selectCategory = (category) => {
       selectedCategory.value = category;
     };
-
     // Spieler tritt der Lobby bei
     const joinLobby = () => {
       if (!selectedCategory.value) return;
@@ -132,24 +150,30 @@ export default {
       socket.emit('joinLobby', { category: selectedCategory.value });
     };
     const requestNextQuestion = () => {
-      showNextButton.value = false; // Button ausblenden
+      hasAnswered.value = false; // Button ausblenden
+      answerFeedback.value = '';
       socket.emit("requestNextQuestion", lobby.value.id);
     };
 
     // Spieler sendet seine Antwort
     const sendAnswer = (answerIndex) => {
       if (hasAnswered.value) return; // Verhindert, dass der Spieler erneut antwortet
+
+      currentQuestion.value.selected = answerIndex;  // Speichert die Antwort in der aktuellen Frage
+
       socket.emit('answerQuestion', { lobbyId: lobby.value.id, answer: answerIndex });
       answeredQuestions.value.push({
         question: currentQuestion.value.question,
         options: currentQuestion.value.options,
         correct: currentQuestion.value.correct,
         selected: answerIndex, // Speichert, was der Nutzer gewählt hat
+        playerId: socket.id,
       });
+      
       hasAnswered.value = true; // Markiert, dass der Spieler geantwortet hat
-      showNextButton.value = true; 
     };
     // Spieler antwortet auf eine empfangene Frage
+
     const sendReceivedAnswer = (answerIndex) => {
       if (!receivedQuestion.value) return; // Falls keine empfangene Frage vorhanden ist
       socket.emit('answerQuestion', { 
@@ -157,7 +181,6 @@ export default {
         answer: answerIndex 
       });
       receivedQuestion.value = null; // Entfernt die Frage nach der Antwort
-      showNextButton.value = true;
     };
 
     // Update der Lobby, wenn ein Spieler beitritt
@@ -183,7 +206,6 @@ export default {
 
       answerFeedback.value = '';
       hasAnswered.value = false; // Setze das Flag zurück, wenn eine neue Frage kommt
-      showNextButton.value = false;
     });
 
     // Frage an Mitspieler senden
@@ -205,6 +227,12 @@ export default {
       if (feedback.correct) {
         score.value += 1;
       }
+    });
+
+    //Erster Spieler ist fertig
+    socket.on('playerFinished', (data) => {
+        // Speichere die Nachricht, die vom Backend gesendet wird
+        playerFinishedMessage.value = data.message;
     });
 
     // Das Spiel ist vorbei
@@ -256,11 +284,11 @@ export default {
       sendQuestionToTeammate, // ← Hier hinzufügen!
       receivedQuestion,
       sendReceivedAnswer,
-      showNextButton, // ⬅ Wichtig für den Button
       requestNextQuestion, 
       quizCompleted,
       askedQuestions,
       answeredQuestions,
+      playerFinishedMessage,
     };
   },
 };
@@ -289,13 +317,23 @@ button {
   color: #000;
   margin: 1em auto;
 }
-.quiz-form button{
+.quiz-form button, .quiz-start{
   cursor:pointer;
   background-color: #546A7B;
   padding: 0.8rem;
   color: #fff;
+  border: 1px solid #546A7B;
+  border-radius: 8px;
 }
- 
+.quiz-form button.disabled{
+  opacity: 0.7;
+}
+.quiz-form button.wrong{
+  background-color:red;
+}
+.quiz-form button.correct{
+  background-color:green;
+}
 .answered-questions {
   border: 1px solid #000;
   padding: 1rem;

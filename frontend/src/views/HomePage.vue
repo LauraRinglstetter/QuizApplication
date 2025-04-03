@@ -1,7 +1,9 @@
 <template>
     <div>
-      <p v-if="username">Willkommen zurück, {{ username }}!</p>
-      <h1>Dein Dashboard</h1>
+      
+      <h1>Skillmaster Dashboard</h1>
+      <h2 v-if="username">Willkommen zurück, {{ username }}!</h2>
+      <p> Hier kannst du ein Quiz starten, die Fragenkataloge erweitern, gemeinsam mit anderen Spielern lernen und vieles mehr!</p>
       <div class="categories-dashboard">
         <div class="quiz-general">
           <p> Erweitere deine Kenntnisse und starte ein Quiz!</p>
@@ -72,7 +74,7 @@
  button, a{
   appearance: none;
   padding: 0.5rem 1rem;
-  background-color: rgba(10, 166, 215, 1);
+  background-color: #546A7B;
   color: #fff;
   text-transform: uppercase;
   border-radius: 0.5rem;

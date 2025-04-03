@@ -1,5 +1,6 @@
 <template>
     <div>
+      <router-link to="/home" class="back exit">Zurück zum Dashboard</router-link>
         <h1>Dein Profil</h1>
         <p class="icon">&#128100;</p>
         <table>
@@ -17,7 +18,7 @@
                 </tr>
             </tbody>
         </table>
-        <router-link to="/home" class="back">Zurück zum Dashboard</router-link>
+        
     </div>
 </template>
 <script>

@@ -325,6 +325,7 @@ button:disabled{
     border: 1px solid #000;
     padding: 0.5rem 1rem;
     border-radius: 8px;
+    color: #000;
 }
 
 </style>
