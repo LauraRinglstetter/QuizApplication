@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');  // HTTP-Server benötigt für WebSockets
 const {Server} = require('socket.io'); 
 const app = express();
+const path = require('path');
 const cors = require('cors');
 const server = http.createServer(app);
 const io = new Server(server, {
