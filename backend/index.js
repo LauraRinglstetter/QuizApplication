@@ -19,6 +19,11 @@ app.use(cors());
 
 const router = require('./routes/router.js');
 app.use('/api', router);
+app.use(express.static(path.join(__dirname, 'public'))); // oder 'frontend/dist'
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/index.html'));
+});
 
 // Neue Route für "/"
 router.get('/test', (req, res) => {
