@@ -82,4 +82,7 @@ export default {
     font-size: 50px;
     margin: 0;
 }
+h1{
+  color: #fff;
+}
 </style>

@@ -32,8 +32,8 @@
             </div> 
         </div>
         <!-- Fragen anzeigen -->
-        <div v-if="questions.length > 0" class="questions-list">
-            <h2>Fragen für Kategorie: {{ selectedCategory }}</h2>
+        <div v-if="questions.length > 0" class="questions-list" ref="questionList">
+            <h2>Fragen für diese Kategorie {{ category }}</h2>
             <ul>
                 <li v-for="(question, index) in questions" :key="index" class="question-item">
                     <strong>Frage:</strong> {{ question.question }} <br />
@@ -115,7 +115,7 @@ export default {
   },
   methods: {
     async seeAllQuestions(category) {
-        this.selectedCategory = category; // Setze die aktuelle Kategorie
+        //this.selectedCategory = category; // Setze die aktuelle Kategorie
         this.questions = []; // Zurücksetzen der Fragenliste
 
         try {
@@ -130,6 +130,11 @@ export default {
             console.error("Fehler beim Abrufen der Fragen:", error);
             this.errorMessage = "Fehler beim Laden der Fragen.";
         }
+        nextTick(() => {
+        if (this.$refs.questionList) {
+          this.$refs.questionList.scrollIntoView({ behavior: "smooth" });
+        }
+      });
     },
     async fetchCategories() {
       try {
@@ -249,26 +254,30 @@ export default {
 .container-questions{
   margin-top: 30px;
 }
+h1{
+  font-weight: 300;
+  color: #ad986e;
+}
 .overview{
     display: flex;
     flex-wrap:wrap;
     justify-content: center;
     gap: 2rem;
-    width: 90%;
+    width: 70%;
     margin: 4rem auto;
 }
 .overview > div{
     width: 30%;
-    padding: 4rem 1rem ;
+    padding: 2rem 1rem ;
     border-radius: 10px;
-    background-color: rgba(84, 106, 123, 0.2);
+    background-color: rgba(173, 152, 110, 0.3);
     color: #000;
     text-align: center;
     font-size: 1rem;
     cursor: pointer;
 }
 div > button{
-    background-color: #546A7B;
+    background-color: #ad986e;
     color: #fff;
     border: none;
     padding: 0.5rem 1rem;
@@ -322,7 +331,7 @@ div > button{
     cursor: pointer;
     display:block;
     margin: 1rem auto;
-    background-color: #546A7B;
+    background-color: #ad986e;
     color: #fff;
 }
 .question-item {

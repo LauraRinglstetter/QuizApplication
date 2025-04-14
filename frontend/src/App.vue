@@ -1,21 +1,15 @@
 <template>
-  <div id="app">
+  <div class="app" :class="backgroundClass">
     <nav class="nav">
       <p>Skillmaster <span>Skill up your life</span></p>
 
       <!-- Anzeige des Profils und des Logout-Buttons, wenn der Benutzer eingeloggt ist -->
       <button v-if="isLoggedIn" @click="goToProfile">Profil &#128100;</button>
       <button v-if="isLoggedIn" @click="logout">Logout</button>
-      <!-- <router-link to="/">Home</router-link> -->
-      <!-- <router-link to="/login">Login</router-link>
-      <router-link to="/register">Register</router-link> -->
     </nav>
 
     <!-- Hier wird die aktive Route angezeigt -->
     <div class="main"><router-view></router-view> </div>
-    <!-- <h2>Teste die Verbindung zum Backend</h2>
-    <button @click="getDataFromBackend">Daten vom Backend abrufen</button>
-    <p v-if="message">{{ message }}</p> Nachricht vom Backend anzeigen -->
   </div>
 </template>
 
@@ -28,6 +22,12 @@ export default {
     return {
       message: '', // Hier speichern wir die Nachricht vom Backend
       isLoggedIn: false // Initialer Status des Benutzers
+    }
+  },
+  computed: {
+    backgroundClass() {
+      // Wenn die aktuelle Route die Fragen-Seite ist, entfernen wir das Hintergrundbild
+      return this.$route.name === 'questions' ? 'no-background' : '';
     }
   },
 
@@ -71,10 +71,12 @@ export default {
 * {
   box-sizing: border-box;
 }
-body, html{
+body, html, #app{
   margin: 0;
   padding: 0;
   width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
 #app {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -83,29 +85,42 @@ body, html{
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: 		#000;
-  width: 100%;
-
+  
+  height: 100%;
 }
-.main{
-  margin-top: 140px;
+
+.app{
+  height: 100vh;
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+                  url('assets/background-image.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.no-background {
+  background-image: none;
 }
 .nav{
   width: 100%;
-  background-color: 	#f4f5f5;
+  background-image:linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
   padding: 1em 3em;
   display: flex;
   gap: 2em;
   justify-content: flex-end;
   align-items:center;
-  position:fixed;
+  position:relative;
   z-index:10;
-  height: 130px;
   top: 0;
+  height: 120px;
 }
+.main{
+  width:100%;
+  height: calc(100vh - 120px);
+}
+
 .nav > p{
   text-decoration: none;
-  color: #546A7B;
-  border: 1px solid #546A7B;
+  color: #fff;
+  border: 1px solid #fff;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   height: fit-content;
@@ -140,9 +155,11 @@ body, html{
     display:block;
     width:fit-content;
     text-decoration: none;
-    border: 1px solid #000;
+    border: 1px solid #ad986e;
     padding: 0.5rem 1rem;
     border-radius: 8px;
+    color: #ad986e;
+    background-color: #fff;
 }
 
 /*Responsive Design*/

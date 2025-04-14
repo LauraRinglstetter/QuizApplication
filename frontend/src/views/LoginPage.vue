@@ -63,21 +63,18 @@
   </script>
   
 <style>
+
 .container{
   width: 100%;
-  height: 100vh;;
-  background-image: url('../assets/background-image.jpg');
-  background-size:cover;
+  height: calc(100vh - 120px); 
   display:flex;
   flex-direction:column;
-  position:absolute;
-  top: 0;
+  
 }
 .loginBox{
   width: 30%;
-  min-width: 350px;
+  min-width: 340px;
   margin: auto auto;
-  margin-top: 200px;
   border: 1px solid #000;
   padding: 1em 1em 2em 1em;
   background-color: #fff;
@@ -107,8 +104,9 @@ form > input{
   padding: 5px;
 }
 form > input[type="button"]{
-  background-color: #546A7B;
+  background-color: #ad986e;
   color: #fff;
+  border: 1px solid #ad986e;
 }
 </style>
   

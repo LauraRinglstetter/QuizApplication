@@ -85,7 +85,8 @@ form > input{
   padding: 5px;
 }
 form > input[type="button"]{
-  background-color: #546A7B;
+  background-color: #ad986e;
   color: #fff;
+  border: 1px solid #ad986e;
 }
 </style>

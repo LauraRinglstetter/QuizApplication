@@ -1,9 +1,10 @@
 <template>
-    <div>
-      
-      <h1>Skillmaster Dashboard</h1>
-      <h2 v-if="username">Willkommen zurück, {{ username }}!</h2>
-      <p> Hier kannst du ein Quiz starten, die Fragenkataloge erweitern, gemeinsam mit anderen Spielern lernen und vieles mehr!</p>
+    <div class="dashboard">
+      <div id="intro">
+        <h1>Skillmaster Dashboard</h1>
+        <h2 v-if="username">Willkommen zurück, {{ username }}!</h2>
+        <p> Hier kannst du ein Quiz starten, die Fragenkataloge erweitern, gemeinsam mit anderen Spielern lernen und vieles mehr!</p>
+      </div>
       <div class="categories-dashboard">
         <div class="quiz-general">
           <p> Erweitere deine Kenntnisse und starte ein Quiz!</p>
@@ -71,10 +72,25 @@
   </script>
   
 <style scoped>
+.dashboard{
+  width: 100%;
+  color: #fff;
+  padding: 2rem 1rem;
+  margin: 0 auto;
+  
+}
+.dashboard h1, h2, p{
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 1px;
+}
+#intro p{
+  color: #fff;
+}
  button, a{
   appearance: none;
   padding: 0.5rem 1rem;
-  background-color: #546A7B;
+  background-color: #ad986e;
   color: #fff;
   text-transform: uppercase;
   border-radius: 0.5rem;
@@ -94,9 +110,11 @@
   gap: 2rem;
 }
 .categories-dashboard > div {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
   padding: 2rem 1rem;
+  background:#fff;
+}
+.categories-dashboard p{
+  color: #ad986e;
 }
 .buttons{
   display:flex;

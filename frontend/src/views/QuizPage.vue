@@ -216,9 +216,7 @@ const NextQuestion = () => {
   font-family: 'Montserrat', sans-serif;
   font-size: 1rem;
 }
-body{
-  background-color: #546A7B;
-}
+
 .app{
   display:flex;
   flex-direction: column;
@@ -226,13 +224,16 @@ body{
   justify-content: center;
   padding: 2rem;
   width:100%;
+  height:100%;
 }
-h1{
+h1, h2, h3{
   font-size: 2rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
+  font-weight: 300;
+  color: #fff;
 }
 .quiz{
-  background-color: rgba(84, 106, 123, 0.2);
+  background-color: rgba(255, 255, 255, 0.7);
   padding: 1.5rem;
   width: 100%;
   max-width: 640px;
@@ -262,7 +263,7 @@ h1{
 }
 .option{
   cursor:pointer;
-  background-color: #546A7B;
+  background-color: #ad986e;
   padding: 0.8rem;
   color: #fff;
 }
@@ -284,13 +285,14 @@ h1{
 button{
   appearance: none;
   padding: 0.5rem 1rem;
-  background-color: #e9ccb1;
+  background-color: #ad986e;
   text-transform: uppercase;
   border-radius: 0.5rem;
   border: none;
   display:block;
   margin: 1rem auto;
   cursor:pointer;
+  color: #fff;
 }
 button:disabled{
   opacity: 0.5;

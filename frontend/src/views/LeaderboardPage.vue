@@ -42,7 +42,7 @@ export default {
 <style>
 table{
     width: 50%;
-    background-color: #546A7B;
+    background-color: #ad986e;
     color: #fff;
     margin: 2rem auto;
     padding: 2rem;

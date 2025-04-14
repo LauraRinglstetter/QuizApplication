@@ -52,8 +52,9 @@ p{
     flex-wrap:wrap;
     gap: 20px;
     justify-content:center;
-    margin: 5%;
+    margin: 2%;
 }
+
 button{
     background-color: #f4f5f5;
     border: none;
@@ -62,6 +63,7 @@ button{
     cursor:pointer;
     font-size: 20px;
     flex:1;
+    color: #ad986e;
 }
 @media(max-width:1050px){
     button{
