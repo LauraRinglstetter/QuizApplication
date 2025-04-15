@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-const url = process.env.VUE_APP_API_BASE;
+const url = 'https://quizapplication-production-ff18.up.railway.app/api';
 
 export default {
   async login(credentials) {
