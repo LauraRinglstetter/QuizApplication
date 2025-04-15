@@ -8,5 +8,12 @@ const connection = mysql.createConnection({
     password: process.env.DB_PASSWORD,
 });
 
-connection.connect();
+// Versuche, die Verbindung herzustellen
+connection.connect((err) => {
+    if (err) {
+        console.error('Fehler bei der Verbindung zur MySQL-Datenbank:', err.stack);
+        return;
+    }
+    console.log('Erfolgreich mit der MySQL-Datenbank verbunden.');
+});
 module.exports = connection;
