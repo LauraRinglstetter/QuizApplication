@@ -30,7 +30,7 @@ export default {
     };
   },
   created() {
-    fetch(`${import.meta.env.VITE_API_BASE}/leaderboard`)
+    fetch(`${import.meta.env.VUE_APP_API_BASE}/leaderboard`)
       .then((response) => response.json())
       .then((data) => {
         this.leaderboard = data; // Backend-Daten speichern
