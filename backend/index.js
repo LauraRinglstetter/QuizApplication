@@ -6,13 +6,16 @@ const path = require('path');
 const cors = require('cors');
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "http://localhost:8081" },
+  cors: {
+    origin: "*", // Offen für alle Domains (für Entwicklung ok)
+    methods: ["GET", "POST"]
+  }
 });
 
 
 
 require('dotenv').config();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 //BEnutzerdaten im JSON-Format
 app.use(express.json())
@@ -20,16 +23,17 @@ app.use(cors());
 
 const router = require('./routes/router.js');
 app.use('/api', router);
-app.use(express.static(path.join(__dirname, 'public'))); // oder 'frontend/dist'
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
-});
 
 // Neue Route für "/"
-router.get('/test', (req, res) => {
+app.get('/test', (req, res) => {
     res.json({ message: 'Hallo von deinem Express-Backend!' }); // Sendet ein JSON-Objekt
-  });
+});
+
+app.use(express.static(path.join(__dirname, 'frontend/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
+});
 
 
 require('./socketHandler')(io); // Importiert die Socket-Logik
