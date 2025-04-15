@@ -128,7 +128,7 @@ const currentQuestion = ref(0);
 // Hole die Fragen von der API
 const fetchQuestions = async (category) => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/questions?category=${category}`);
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE}/questions?category=${category}`);
     questions.value = response.data.map(q => ({
       question: q.question,
       options: JSON.parse(q.options), // Optionen als JSON umwandeln
@@ -166,8 +166,8 @@ const saveScore = async () => {
       console.error('Kein Benutzername gefunden');
       return;
     }
-
-    const response = await axios.put('http://localhost:3000/api/leaderboard', {
+    
+    const response = await axios.put(`${import.meta.env.VITE_API_BASE}/leaderboard`, {
       username,
       score: score.value, // Berechneter Punktestand
     });

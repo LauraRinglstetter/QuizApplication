@@ -60,9 +60,9 @@ export default {
         try {
             const decodedToken = jwtDecode(token);
             const userId = decodedToken.userId; // Verwende id statt userId
-
+            
             // API-Aufruf mit userId (id) aus dem Token
-            axios.get(`http://localhost:3000/api/users/score/${userId}`)
+            axios.get(`${import.meta.env.VITE_API_BASE}/users/score/${userId}`)
                 .then((response) => {
                     this.score = response.data.score; // Punktestand im State speichern
                 })

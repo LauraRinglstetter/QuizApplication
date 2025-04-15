@@ -117,9 +117,9 @@ export default {
     async seeAllQuestions(category) {
         //this.selectedCategory = category; // Setze die aktuelle Kategorie
         this.questions = []; // Zurücksetzen der Fragenliste
-
+        
         try {
-          const response = await axios.get(`http://localhost:3000/api/questions?category=${category}`);
+          const response = await axios.get(`${import.meta.env.VITE_API_BASE}/questions?category=${category}`);
           this.questions = response.data.map(q => ({
             question: q.question,
             options: JSON.parse(q.options), // Optionen als JSON umwandeln
@@ -138,7 +138,7 @@ export default {
     },
     async fetchCategories() {
       try {
-        const response = await axios.get("http://localhost:3000/api/categories"); // API-Aufruf
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE}/categories`);// API-Aufruf
         this.categories = response.data.map(cat => cat.category);
         console.log(this.categories);
       } catch (error) {
@@ -226,10 +226,10 @@ export default {
         answer: this.correctAnswer, // Index der richtigen Antwort
         category: this.selectedCategory, // Zugehörige Kategorie
       };
-
+      
       try {
         // Sende die Frage an das Backend, um sie in der Datenbank zu speichern
-        await axios.post("http://localhost:3000/api/questions", questionData);
+        await axios.post(`${import.meta.env.VITE_API_BASE}/questions`, questionData);
         this.successMessage = "Frage erfolgreich hinzugefügt!";
 
         // Zurücksetzen des Formulars nach dem Absenden

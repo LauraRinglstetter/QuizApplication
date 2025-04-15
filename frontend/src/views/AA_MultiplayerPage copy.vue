@@ -113,7 +113,7 @@ export default {
     // Abrufen der Kategorien
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/categories");
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE}/categories`);
         categories.value = response.data.map(cat => cat.category);
       } catch (error) {
         console.error("Fehler beim Abrufen der Kategorien:", error);
@@ -224,8 +224,7 @@ export default {
           console.error('Kein Benutzername gefunden');
           return;
         } 
-
-        const response = await axios.put('http://localhost:3000/api/leaderboard', {
+        const response = await axios.put(`${import.meta.env.VITE_API_BASE}/test`, {
           username,
           score: score.value, // Berechneter Punktestand
         });

@@ -38,7 +38,7 @@ export default {
     },
     async getDataFromBackend() {
       try {
-        const response = await axios.get('http://localhost:3000/api/test') // API-Call zum Backend
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE}/test`);// API-Call zum Backend
         this.message = response.data.message // Speichere die Antwort in der "message"-Variable
       } catch (error) {
         console.error('Fehler beim Abrufen der Daten:', error)

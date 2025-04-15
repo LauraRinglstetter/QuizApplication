@@ -30,7 +30,7 @@ export default {
     };
   },
   created() {
-    fetch("http://localhost:3000/api/leaderboard")
+    fetch(`${import.meta.env.VITE_API_BASE}/leaderboard`)
       .then((response) => response.json())
       .then((data) => {
         this.leaderboard = data; // Backend-Daten speichern
@@ -38,6 +38,7 @@ export default {
       .catch((error) => console.error("Fehler beim Laden der Bestenliste:", error));
   },
 };
+
 </script>
 <style>
 table{

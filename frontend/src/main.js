@@ -11,15 +11,17 @@ const app = createApp(App);
 // set auth header
 Axios.defaults.headers.common['Authorization'] = `Bearer ${store.state.token}`;
 
-
 // Setze die Basis-URL für Axios
-Axios.defaults.baseURL = 'http://localhost:3000';
+Axios.defaults.baseURL = import.meta.env.VITE_API_BASE;
 
 // Global Axios verfügbar machen
 app.config.globalProperties.$axios = Axios;
 
-// WebSocket-Verbindung einrichten
-const socket = io("http://localhost:3000"); 
+// WebSocket-Verbindung
+const socket = io(import.meta.env.VITE_SOCKET_URL, {
+    transports: ['websocket'],
+    withCredentials: true
+  });
 
 
 // Global verfügbar machen (soll in mehreren Komponeten verfügbar sein)
