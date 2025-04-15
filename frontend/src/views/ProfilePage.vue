@@ -62,7 +62,7 @@ export default {
             const userId = decodedToken.userId; // Verwende id statt userId
             
             // API-Aufruf mit userId (id) aus dem Token
-            axios.get(`${import.meta.env.VUE_APP_API_BASE}/users/score/${userId}`)
+            axios.get(`${process.env.VUE_APP_API_BASE}/users/score/${userId}`)
                 .then((response) => {
                     this.score = response.data.score; // Punktestand im State speichern
                 })

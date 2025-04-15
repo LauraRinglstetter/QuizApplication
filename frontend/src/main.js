@@ -12,13 +12,13 @@ const app = createApp(App);
 Axios.defaults.headers.common['Authorization'] = `Bearer ${store.state.token}`;
 
 // Setze die Basis-URL für Axios
-Axios.defaults.baseURL = import.meta.env.VUE_APP_API_BASE;
+Axios.defaults.baseURL = process.env.VUE_APP_API_BASE;
 
 // Global Axios verfügbar machen
 app.config.globalProperties.$axios = Axios;
 
 // WebSocket-Verbindung
-const socket = io(import.meta.env.VUE_APP_SOCKET_URL, {
+const socket = io(process.env.VUE_APP_SOCKET_URL, {
     transports: ['websocket'],
     withCredentials: true
   });

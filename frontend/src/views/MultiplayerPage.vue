@@ -132,7 +132,7 @@ export default {
     // Abrufen der Kategorien
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VUE_APP_API_BASE}/categories`);
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE}/categories`);
         categories.value = response.data.map(cat => cat.category);
       } catch (error) {
         console.error("Fehler beim Abrufen der Kategorien:", error);
@@ -253,7 +253,7 @@ export default {
           return;
         } 
 
-        const response = await axios.put(`${import.meta.env.VUE_APP_API_BASE}/leaderboard`, {
+        const response = await axios.put(`${process.env.VUE_APP_API_BASE}/leaderboard`, {
           username,
           score: score.value, // Berechneter Punktestand
         });

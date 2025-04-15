@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-const url = (`${import.meta.env.VUE_APP_API_BASE}`);
+const url = process.env.VUE_APP_API_BASE;
 
 export default {
   async login(credentials) {

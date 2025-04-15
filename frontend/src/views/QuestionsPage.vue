@@ -119,7 +119,7 @@ export default {
         this.questions = []; // Zurücksetzen der Fragenliste
         
         try {
-          const response = await axios.get(`${import.meta.env.VUE_APP_API_BASE}/questions?category=${category}`);
+          const response = await axios.get(`${process.env.VUE_APP_API_BASE}/questions?category=${category}`);
           this.questions = response.data.map(q => ({
             question: q.question,
             options: JSON.parse(q.options), // Optionen als JSON umwandeln
@@ -138,7 +138,7 @@ export default {
     },
     async fetchCategories() {
       try {
-        const response = await axios.get(`${import.meta.env.VUE_APP_API_BASE}/categories`);// API-Aufruf
+        const response = await axios.get(`${process.env.VUE_APP_API_BASE}/categories`);// API-Aufruf
         this.categories = response.data.map(cat => cat.category);
         console.log(this.categories);
       } catch (error) {
@@ -229,7 +229,7 @@ export default {
       
       try {
         // Sende die Frage an das Backend, um sie in der Datenbank zu speichern
-        await axios.post(`${import.meta.env.VUE_APP_API_BASE}/questions`, questionData);
+        await axios.post(`${process.env.VUE_APP_API_BASE}/questions`, questionData);
         this.successMessage = "Frage erfolgreich hinzugefügt!";
 
         // Zurücksetzen des Formulars nach dem Absenden
