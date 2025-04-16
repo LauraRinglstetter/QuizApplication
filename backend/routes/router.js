@@ -115,7 +115,7 @@ router.get('/categories', async (req, res) => {
 });
 
 // Route für das Hinzufügen von Fragen
-router.post('/questions', (req, res) => {
+router.post('/questions', async (req, res) => {
     console.log("Eingehende Anfrage:", req.body); // Debugging-Ausgabe
 
     const { question, options, answer, category } = req.body;
@@ -128,13 +128,14 @@ router.post('/questions', (req, res) => {
     const query = 'INSERT INTO questions (question, options, answer, category) VALUES (?, ?, ?, ?)';
     const values = [question, JSON.stringify(options), answer, category];
 
-    db.query(query, values, (err, result) => {
-        if (err) {
-            console.error('Fehler beim Speichern der Frage:', err);
-            return res.status(500).json({ message: 'Fehler beim Speichern der Frage' });
-        }
+    try {
+        // Verwende async/await mit der Promise-basierten Abfrage
+        await db.query(query, values);
         res.status(201).json({ message: 'Frage erfolgreich hinzugefügt!' });
-    });
+    } catch (err) {
+        console.error('Fehler beim Speichern der Frage:', err);
+        return res.status(500).json({ message: 'Fehler beim Speichern der Frage' });
+    }
 });
 
 
@@ -166,17 +167,14 @@ router.get('/leaderboard', async (req, res) => {
 });
 
 // API-Endpunkt für das Abrufen des Punktestands des Benutzers
-router.get('/users/score/:id', (req, res) => {
+router.get('/users/score/:id', async (req, res) => {
     const userId = req.params.id; // id aus der URL extrahieren
 
     // SQL-Abfrage zum Abrufen des Benutzers anhand der id
     const query = 'SELECT score FROM users WHERE id = ?'; // Verwende `id` als Spaltenname
 
-    db.query(query, [userId], (err, results) => {
-        if (err) {
-            console.error('Fehler bei der Datenbankabfrage:', err);
-            return res.status(500).json({ message: 'Fehler beim Abrufen des Scores' });
-        }
+    try {
+        const [results] = await db.query(query, [userId]);
 
         if (results.length === 0) {
             return res.status(404).json({ message: 'Benutzer nicht gefunden' });
@@ -185,7 +183,10 @@ router.get('/users/score/:id', (req, res) => {
         // Benutzer gefunden, Punktestand zurückgeben
         const score = results[0].score;
         res.json({ score });
-    });
+    } catch (err) {
+        console.error('Fehler bei der Datenbankabfrage:', err);
+        return res.status(500).json({ message: 'Fehler beim Abrufen des Scores' });
+    }
 });
 
 
