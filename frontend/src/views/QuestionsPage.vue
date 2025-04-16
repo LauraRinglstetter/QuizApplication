@@ -28,7 +28,7 @@
               <h3>{{ category }}</h3>
               <span @click="selectCategory(category)" class="question-button">Neue Frage hinzufügen</span>  
               <span @click="seeAllQuestions(category)" class="question-button">Alle Fragen anzeigen</span>     
-              <span v-if="isTemporaryCategory(category)" @click="deleteCategory(category)" class="delete-button">🗑 Löschen</span>        
+       
             </div> 
         </div>
         <!-- Fragen anzeigen -->

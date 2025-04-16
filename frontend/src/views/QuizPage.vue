@@ -160,7 +160,7 @@ const score = computed(() => {
 //Speichert den Punktestand in der Datenbank
 const saveScore = async () => {
   try {
-    const username = localStorage.getItem('username');
+    const username = sessionStorage.getItem('username');
 
     if (!username) {
       console.error('Kein Benutzername gefunden');
