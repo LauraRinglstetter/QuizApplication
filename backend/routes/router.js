@@ -168,7 +168,7 @@ router.get('/leaderboard', async (req, res) => {
     }
 
     try {
-        const [result] = await db.query('UPDATE users SET score = = IFNULL(score, 0) + ? WHERE username = ?', [score, username]);
+        const [result] = await db.query('UPDATE users SET score = IFNULL(score, 0) + ? WHERE username = ?', [score, username]);
         res.status(200).json({ message: 'Punktestand erfolgreich aktualisiert' });
     } catch (err) {
         console.error('Fehler beim Speichern des Punktestands:', err);
