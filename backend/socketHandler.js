@@ -153,8 +153,8 @@ module.exports = (io) => {
       } else {
         // Alle Fragen für den Spieler beantwortet -> prüfen, ob alle Spieler fertig sind
         const allPlayersAnswered = lobby.players.every(playerId => {
-          const playerCurrentIndex = currentQuestionIndex + 1;
-          console.log(currentQuestionIndex);
+          const playerCurrentIndex = currentQuestionIndex[playerId] + 1;
+          console.log(currentQuestionIndex[playerId]);
           const totalQuestions = lobby.questions[playerId]?.length || 0;
           console.log(`Spieler ${playerId} hat Fragen bis Index ${playerCurrentIndex} beantwortet. Total Fragen: ${totalQuestions}`);
           if (playerCurrentIndex >= totalQuestions) {
