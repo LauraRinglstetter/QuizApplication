@@ -156,7 +156,8 @@ const score = computed(() => {
   })
   return value;
 })
-
+const username = sessionStorage.getItem('username');
+console.log('Benutzername aus sessionStorage:', username);
 //Speichert den Punktestand in der Datenbank
 const saveScore = async () => {
   try {
