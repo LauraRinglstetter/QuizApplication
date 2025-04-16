@@ -212,13 +212,6 @@ module.exports = (io) => {
 
       // Feedback senden
       socket.emit('answerFeedback', { message: correct ? 'Richtig!' : 'Falsch!', correct });
-
-      if(lobby.forwardedQuestions[socket.id]){
-        console.log(`DEBUG: Spieler ${socket.id} beantwortet eine weitergeleitete Frage.`);
-        delete lobby.forwardedQuestions[socket.id]; // Entfernen, da sie beantwortet wurde
-      } else{
-      
-      }
       
     });
 

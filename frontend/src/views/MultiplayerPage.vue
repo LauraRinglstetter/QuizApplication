@@ -173,7 +173,6 @@ export default {
       hasAnswered.value = true; // Markiert, dass der Spieler geantwortet hat
     };
     // Spieler antwortet auf eine empfangene Frage
-
     const sendReceivedAnswer = (answerIndex) => {
       if (!receivedQuestion.value) return; // Falls keine empfangene Frage vorhanden ist
       socket.emit('answerQuestion', { 
@@ -241,15 +240,8 @@ export default {
       teamScore.value = data.teamScore; 
       saveScore(); // Punktestand speichern
       quizCompleted.value = true;
-      //Antwortverlauf vom Server abrufen
-      if (data.answerHistory && data.answerHistory[socket.id]) {
-        answeredQuestions.value = data.answerHistory[socket.id].map(entry => ({
-          question: entry.question,
-          options: entry.options || [], // fallback
-          correct: entry.correctAnswer,
-          selected: entry.selectedAnswer,
-        }));
-      }
+
+      
     });
 
     //Speichert den Punktestand in der Datenbank
