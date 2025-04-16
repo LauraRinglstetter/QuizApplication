@@ -170,10 +170,12 @@ module.exports = (io) => {
       if (allPlayersAnswered) {
         const teamScore = Object.values(lobby.scores).reduce((acc, score) => acc + score, 0);
         // Spiel beenden
+        const answeredQuestions = lobby.answeredQuestions || {};
         io.to(lobbyId).emit('gameOver', { 
           message: 'Das Spiel ist vorbei!',
           scores: lobby.scores,
           teamScore: teamScore,
+          answeredQuestions: answeredQuestions,
         });
         console.log('Spiel beendet:', lobby.scores);
         console.log(`Gesamtpunktzahl des Teams: ${teamScore}`);

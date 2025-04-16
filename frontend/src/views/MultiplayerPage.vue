@@ -87,7 +87,7 @@
         Ihr habt das Spiel beendet! Dein Score: {{ score }} <br>
         Euer gemeinsamer Team-Score: {{ teamScore }}
       </p>
-      <h2>Übersicht der gestellten Fragen</h2>
+      <h2>Übersicht der dir gestellten Fragen</h2>
       <div class="answered-questions" v-for="(q, index) in answeredQuestions" :key="index">
         <h3>Frage {{ index + 1 }}: {{ q.question }}</h3>
 
@@ -96,6 +96,24 @@
             v-for="(option, i) in q.options" 
             :key="i" 
             :style="{ color: i === q.correct ? 'green' : 'black', fontWeight: (i === q.correct || i === q.selected) ? 'bold' : 'normal' }">
+            {{ option }}
+            <span v-if="i === q.correct" style="color: green;">✔️</span>
+            <span v-if="i === q.selected && i !== q.correct" style="color: red;">❌</span>
+          </li>
+        </ul>
+      </div>
+      <h2>Fragen deines Mitspielers</h2>
+      <div class="answered-questions" v-for="(q, index) in partnerAnsweredQuestions" :key="'partner-' + index">
+        <h3>Frage {{ index + 1 }}: {{ q.question }}</h3>
+        <ul>
+          <li 
+            v-for="(option, i) in q.options" 
+            :key="i" 
+            :style="{ 
+              color: i === q.correct ? 'green' : 'black',
+              fontWeight: (i === q.correct || i === q.selected) ? 'bold' : 'normal'
+            }"
+          >
             {{ option }}
             <span v-if="i === q.correct" style="color: green;">✔️</span>
             <span v-if="i === q.selected && i !== q.correct" style="color: red;">❌</span>
@@ -126,6 +144,7 @@ export default {
     const receivedQuestion = ref(null); // Für empfangene Fragen
     const quizCompleted = ref(false); //Ist Quiz abgeschlossen?
     const askedQuestions = ref([]); // Speichert alle Fragen, die bereits gestellt wurden
+    const partnerAnsweredQuestions = ref([]); // Variable für Mitspieler
     const answeredQuestions = ref([]); // Speichert alle beantworteten Fragen
     const playerFinishedMessage = ref(null); 
 
@@ -241,7 +260,13 @@ export default {
       saveScore(); // Punktestand speichern
       quizCompleted.value = true;
 
-      
+      // Daten aus dem Backend extrahieren
+      const allAnswers = data.answeredQuestions || {};
+      const playerId = socket.id;
+      const otherPlayerId = Object.keys(allAnswers).find(id => id !== playerId);
+
+      answeredQuestions.value = allAnswers[playerId] || [];
+      partnerAnsweredQuestions.value = allAnswers[otherPlayerId] || [];
     });
 
     //Speichert den Punktestand in der Datenbank
