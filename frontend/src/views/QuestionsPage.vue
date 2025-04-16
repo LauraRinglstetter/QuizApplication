@@ -100,7 +100,7 @@ export default {
       correctAnswer: null, // Index der richtigen Antwort
       successMessage: "",
       errorMessage: "", 
-      questions: [] // Hält die Fragen zur ausgewählten Kategorie
+      questions: [], // Hält die Fragen zur ausgewählten Kategorie
       isSubmitting: false, // Steuert den Status des Formulars
     };
   },
