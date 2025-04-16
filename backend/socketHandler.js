@@ -175,7 +175,7 @@ module.exports = (io) => {
             io.to(lobbyId).emit('gameOver', { 
               message: 'Das Spiel ist vorbei!',
               scores: lobby.scores,
-              teamScore: teamScore
+              teamScore: teamScore,
             });
             console.log('Spiel beendet:', lobby.scores);
             console.log(`Gesamtpunktzahl des Teams: ${teamScore}`);
@@ -205,6 +205,21 @@ module.exports = (io) => {
       console.log('Richtige Antwort:', correctAnswer); 
       const correct = answer === correctAnswer;
 
+      // Speichern der beantworteten Fragen
+      if (!lobby.answeredQuestions) {
+        lobby.answeredQuestions = {};  // Initialisiere das answeredQuestions Objekt, wenn noch nicht vorhanden
+      }
+      if (!lobby.answeredQuestions[socket.id]) {
+        lobby.answeredQuestions[socket.id] = [];  // Initialisiere das Array für den Spieler, falls noch nicht vorhanden
+      }
+
+      // Füge die Frage und die Antwort des Spielers hinzu
+      lobby.answeredQuestions[socket.id].push({
+        question: playerQuestions[currentQuestionIndex].question,
+        options: JSON.parse(playerQuestions[currentQuestionIndex].options),
+        correct: correctAnswer,
+        selected: answer,  // Die Antwort des Spielers
+      });
       // Score aktualisieren 
       if (correct) {
         lobbies[lobbyId].scores[socket.id] += 1;

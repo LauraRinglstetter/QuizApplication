@@ -172,7 +172,7 @@ export default {
       
       hasAnswered.value = true; // Markiert, dass der Spieler geantwortet hat
     };
-    // Spieler antwortet auf eine empfangene Frage
+    /* Spieler antwortet auf eine empfangene Frage
     const sendReceivedAnswer = (answerIndex) => {
       if (!receivedQuestion.value) return; // Falls keine empfangene Frage vorhanden ist
       socket.emit('answerQuestion', { 
@@ -180,7 +180,7 @@ export default {
         answer: answerIndex 
       });
       receivedQuestion.value = null; // Entfernt die Frage nach der Antwort
-    };
+    };*/
 
     // Update der Lobby, wenn ein Spieler beitritt
     socket.on('lobbyUpdate', (data) => {
@@ -284,7 +284,6 @@ export default {
       joinLobby,
       sendQuestionToTeammate, // ← Hier hinzufügen!
       receivedQuestion,
-      sendReceivedAnswer,
       requestNextQuestion, 
       quizCompleted,
       askedQuestions,
