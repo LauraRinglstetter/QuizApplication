@@ -161,6 +161,7 @@ router.get('/leaderboard', async (req, res) => {
   });
   router.put('/leaderboard', async (req, res) => {
     const { username, score } = req.body;
+    console.log('Received data:', { username, score });
 
     if (!username || score === undefined) {
         return res.status(400).json({ message: 'Username oder Score fehlen' });
