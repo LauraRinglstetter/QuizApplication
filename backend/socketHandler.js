@@ -154,16 +154,16 @@ module.exports = (io) => {
         // Alle Fragen für den Spieler beantwortet -> prüfen, ob alle Spieler fertig sind
         const allPlayersAnswered = lobby.players.every(playerId => {
           const playerCurrentIndex = lobby.currentQuestionIndex[playerId] + 1;
-          console.log(lobby.currentQuestionIndex[socket.id]);
+          console.log(lobby.currentQuestionIndex[playerId]);
           const totalQuestions = lobby.questions[playerId]?.length || 0;
-          console.log(`Spieler ${playerId} hat Fragen bis Index ${playerCurrentIndex} beantwortet. Total Fragen: ${totalQuestions}`);
+          console.log(`Spieler ${playerId} hat Fragen bis Index ${lobby.currentQuestionIndex[playerId] + 1} beantwortet. Total Fragen: ${totalQuestions}`);
           if (playerCurrentIndex >= totalQuestions) {
             // Nur der Spieler, der fertig ist, bekommt die Nachricht
             io.to(playerId).emit('playerFinished', { 
               message: 'Warte bis dein Mitspieler alle Fragen beantwortet hat',
             });
           }
-          return playerCurrentIndex >= totalQuestions; // Spieler hat alle Fragen beantwortet
+          return lobby.currentQuestionIndex[playerId] + 1 >= totalQuestions; // Spieler hat alle Fragen beantwortet
         });
       
   
