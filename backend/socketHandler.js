@@ -157,7 +157,7 @@ module.exports = (io) => {
           console.log(lobby.currentQuestionIndex[playerId]);
           const totalQuestions = lobby.questions[playerId]?.length || 0;
           console.log(`Spieler ${playerId} hat Fragen bis Index ${lobby.currentQuestionIndex[playerId] + 1} beantwortet. Total Fragen: ${totalQuestions}`);
-          if (playerCurrentIndex >= totalQuestions) {
+          if (lobby.currentQuestionIndex[playerId] + 1 >= totalQuestions) {
             // Nur der Spieler, der fertig ist, bekommt die Nachricht
             io.to(playerId).emit('playerFinished', { 
               message: 'Warte bis dein Mitspieler alle Fragen beantwortet hat',
