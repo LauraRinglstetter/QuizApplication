@@ -314,6 +314,7 @@ export default {
       askedQuestions,
       answeredQuestions,
       playerFinishedMessage,
+      partnerAnsweredQuestions,
     };
   },
 };
