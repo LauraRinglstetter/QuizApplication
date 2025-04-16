@@ -89,20 +89,20 @@ router.post('/start', userMiddleware.isLoggedIn, (req, res, next) => {
 });
 
 // Route für das Abrufen der Quizfragen
-router.get('/questions', (req, res) => {
+router.get('/questions', async (req, res) => {
     const { category } = req.query; // Kategorie aus der Anfrage extrahieren
     if (!category) {
-        return res.status(400).json({ message: 'Kategorie nicht angegeben' }); // Fehlermeldung, wenn keine Kategorie angegeben ist
-      }
-    const query = 'SELECT * FROM questions WHERE category = ?'; // SQL-Abfrage, um alle Fragen abzurufen
-    db.query(query, [category], (err, results) => {
-      if (err) {
+        return res.status(400).json({ message: 'Kategorie nicht angegeben' });
+    }
+
+    try {
+        const [results] = await db.query('SELECT * FROM questions WHERE category = ?', [category]);
+        res.json(results); // Gibt die Fragen als JSON zurück
+    } catch (err) {
         console.error('Fehler beim Abrufen der Fragen:', err);
         return res.status(500).json({ message: 'Fehler beim Abrufen der Fragen' });
-      }
-      res.json(results); // Gibt die Fragen als JSON zurück
-    });
-  });
+    }
+});
 
 // Route für das Abrufen der Kategorien
 router.get('/categories', (req, res) => {
@@ -151,23 +151,21 @@ router.get('/leaderboard', (req, res) => {
       res.json(results); // Gibt die Benutzer und Punktestände als JSON zurück
     });
   });
-//API um den Punktestand in der Datenbank zu speichern
-  router.put('/leaderboard', (req, res) => {
+  router.put('/leaderboard', async (req, res) => {
     const { username, score } = req.body;
 
     if (!username || score === undefined) {
-      return res.status(400).json({ message: 'Username oder Score fehlen' });
+        return res.status(400).json({ message: 'Username oder Score fehlen' });
     }
-  
-    const query = 'UPDATE users SET score = score + ? WHERE username = ?';
-    db.query(query, [score, username], (err, result) => {
-      if (err) {
+
+    try {
+        const [result] = await db.query('UPDATE users SET score = score + ? WHERE username = ?', [score, username]);
+        res.status(200).json({ message: 'Punktestand erfolgreich aktualisiert' });
+    } catch (err) {
         console.error('Fehler beim Speichern des Punktestands:', err);
         return res.status(500).json({ message: 'Fehler beim Speichern des Punktestands' });
-      }
-      res.status(200).json({ message: 'Punktestand erfolgreich aktualisiert' });
-    });
-  });
+    }
+});
 
 // API-Endpunkt für das Abrufen des Punktestands des Benutzers
 router.get('/users/score/:id', (req, res) => {
