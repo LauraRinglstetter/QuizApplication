@@ -47,7 +47,7 @@ module.exports = (io) => {
     
       try {
         // Hier verwenden wir queryAsync anstelle von db.query direkt
-        const results = await queryAsync('SELECT * FROM questions WHERE category = ?', [category]);
+        const results = await db.query('SELECT * FROM questions WHERE category = ?', [category]);
     
         if (results.length < 2) {
           return io.to(lobbyId).emit('error', { message: 'Nicht genug Fragen in dieser Kategorie' });
