@@ -138,9 +138,10 @@ module.exports = (io) => {
 
       const playerQuestions = lobby.questions[socket.id];
       const currentQuestionIndex = lobby.currentQuestionIndex[socket.id];
-
       const nextQuestionIndex = currentQuestionIndex + 1;
+
       console.log(nextQuestionIndex);
+
       if (nextQuestionIndex < playerQuestions.length) {
         lobby.currentQuestionIndex[socket.id] = nextQuestionIndex;
         const nextQuestion = playerQuestions[nextQuestionIndex];
@@ -151,38 +152,32 @@ module.exports = (io) => {
           correct: nextQuestion.answer
         }); 
       } else {
-        // Alle Fragen für den Spieler beantwortet -> prüfen, ob alle Spieler fertig sind
-        const allPlayersAnswered = lobby.players.every(playerId => {
-          const playerCurrentIndex = lobby.nextQuestionIndex[playerId];
-          const totalQuestions = lobby.questions[playerId]?.length || 0;
-          console.log(lobby.nextQuestionIndex[playerId]);
-          console.log(`Spieler ${playerId} hat Fragen bis Index ${lobby.nextQuestionIndex[playerId]} beantwortet. Total Fragen: ${totalQuestions}`);
-          if (playerCurrentIndex >= totalQuestions) {
-            // Nur der Spieler, der fertig ist, bekommt die Nachricht
-            io.to(playerId).emit('playerFinished', { 
-              message: 'Warte bis dein Mitspieler alle Fragen beantwortet hat',
-            });
-          }
-          return lobby.currentQuestionIndex[playerId] + 1 >= totalQuestions; // Spieler hat alle Fragen beantwortet
+        // Spieler ist fertig -> speichern
+        lobby.currentQuestionIndex[socket.id] = nextQuestionIndex;
+
+        // Info an Spieler: du bist fertig
+        io.to(socket.id).emit('playerFinished', { 
+          message: 'Warte bis dein Mitspieler alle Fragen beantwortet hat',
+        });    
+      }
+      //Prüfung nach jeder Antwort – sind alle fertig?
+      const allPlayersAnswered = lobby.players.every(playerId => {
+        const totalQuestions = lobby.questions[playerId]?.length || 0;
+        const playerProgress = lobby.currentQuestionIndex[playerId];
+        return playerProgress >= totalQuestions;
+      });
+      // Wenn alle Spieler fertig sind, beenden wir das Spiel
+      if (allPlayersAnswered) {
+        const teamScore = Object.values(lobby.scores).reduce((acc, score) => acc + score, 0);
+        // Spiel beenden
+        io.to(lobbyId).emit('gameOver', { 
+          message: 'Das Spiel ist vorbei!',
+          scores: lobby.scores,
+          teamScore: teamScore,
         });
-      
-  
-        console.log("allPlayersAnswered:", allPlayersAnswered);
-  
-          // Wenn alle Spieler fertig sind, beenden wir das Spiel
-          if (allPlayersAnswered) {
-            const teamScore = Object.values(lobby.scores).reduce((acc, score) => acc + score, 0);
-            // Spiel beenden
-            io.to(lobbyId).emit('gameOver', { 
-              message: 'Das Spiel ist vorbei!',
-              scores: lobby.scores,
-              teamScore: teamScore,
-            });
-            console.log('Spiel beendet:', lobby.scores);
-            console.log(`Gesamtpunktzahl des Teams: ${teamScore}`);
-          }
-            
-        }
+        console.log('Spiel beendet:', lobby.scores);
+        console.log(`Gesamtpunktzahl des Teams: ${teamScore}`);
+      }
     };
 
     // Spieler antwortet auf eine Frage
