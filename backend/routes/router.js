@@ -11,105 +11,76 @@ const db = require('../lib/db.js');
 const userMiddleware = require('../middleware/users.js');
 
 // POST /register
-router.post('/register', userMiddleware.validateRegister, (req, res, next) => {
-    db.query(`SELECT id FROM users WHERE LOWER(username) = LOWER(${db.escape(req.body.username)})`, (err, result) => {
-        if (err) {
-            return res.status(500).send({
-                message: err,
-            });
+router.post('/register', userMiddleware.validateRegister, async(req, res) => {
+    try {
+        const [existingUsers] = await db.query(
+            `SELECT id FROM users WHERE LOWER(username) = LOWER(?)`,
+            [req.body.username]
+        );
+
+        if (existingUsers.length) {
+            return res.status(409).send("Der Benutzername ist bereits vergeben");
         }
 
-        if (result.length) {
-            return res.status(409).send("Der Benutzername ist bereits vergeben");
-        } else {
-            bcrypt.hash(req.body.password, 10, (err, hash) => {
-                if (err) {
-                    return res.status(500).send({
-                        message: err,
-                    });
-                } else {
-                    db.query(
-                        `INSERT INTO users (id, username, password, registered, last_login) 
-                        VALUES ('${uuid.v4()}', ${db.escape(req.body.username)}, '${hash}', now(), now());`,
-                        (err, result) => {
-                            if (err) {
-                                return res.status(400).send({
-                                    message: err,
-                                });
-                            }
-                            return res.status(201).send({
-                                message: 'Registered!',
-                            });
-                        }
-                    );
-                }
-            });
-        }
-    });
+        const hash = await bcrypt.hash(req.body.password, 10);
+        await db.query(
+            `INSERT INTO users (id, username, password, registered, last_login) 
+            VALUES (?, ?, ?, now(), now())`,
+            [uuid.v4(), req.body.username, hash]
+        );
+
+        return res.status(201).send({ message: 'Registered!' });
+
+    } catch (err) {
+        console.error('Fehler bei Registrierung:', err);
+        return res.status(500).send({ message: 'Interner Serverfehler' });
+    }
 });
 
 // POST /login
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const { username, password } = req.body;
 
-    // Überprüfen, ob die erforderlichen Parameter vorhanden sind
     if (!username || !password) {
-        return res.status(400).send({
-            message: 'Username and Password are required!',
-        });
+        return res.status(400).send({ message: 'Username and Password are required!' });
     }
 
-    // Sicheres Query mit Platzhaltern (Prepared Statement)
-    db.query('SELECT * FROM users WHERE username = ?', [username], (err, result) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).send({
-                message: 'Internal server error',
-            });
+    try {
+        const [users] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+
+        if (!users.length) {
+            return res.status(400).send({ message: 'Username oder Passwort falsch!' });
         }
 
-        if (!result.length) {
-            return res.status(400).send({
-                message: 'Username oder Passwort falsch!',
-            });
+        const user = users[0];
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(400).send({ message: 'Benutzer oder Passwort nicht korrekt' });
         }
 
-        // Passwort-Validierung mit bcrypt
-        bcrypt.compare(password, result[0].password, (bErr, bResult) => {
-            if (bErr || !bResult) {
-                console.error('Password compare error:', bErr); 
-                return res.status(400).send({
-                    message: 'Benutzer oder Passwort nicht korrekt',
-                });
-            }
+        const token = jwt.sign(
+            { username: user.username, userId: user.id },
+            process.env.JWT_SECRET_KEY || 'default_secret',
+            { expiresIn: '2h' }
+        );
 
-            // Token generieren
-            const token = jwt.sign(
-                {
-                    username: result[0].username,
-                    userId: result[0].id,
-                },
-                process.env.JWT_SECRET_KEY || 'default_secret',
-                { expiresIn: '2h' }
-            );
+        await db.query('UPDATE users SET last_login = now() WHERE id = ?', [user.id]);
 
-            // Letztes Login-Datum aktualisieren
-            db.query('UPDATE users SET last_login = now() WHERE id = ?', [result[0].id]);
-
-            // Erfolgsantwort senden
-            return res.status(200).send({
-                message: 'Logged in successfully',
-                token,
-                user: {
-                    id: result[0].id,
-                    username: result[0].username,
-                    // Füge weitere notwendige Felder hinzu, aber nicht `password`
-                },
-            });
+        return res.status(200).send({
+            message: 'Logged in successfully',
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+            },
         });
-    });
-});
 
+    } catch (err) {
+        console.error('Login-Fehler:', err);
+        return res.status(500).send({ message: 'Interner Serverfehler' });
+    }
+});
 
 // POST /start
 router.post('/start', userMiddleware.isLoggedIn, (req, res, next) => {
