@@ -28,9 +28,7 @@ router.post('/register', userMiddleware.validateRegister, async(req, res) => {
             VALUES (?, ?, now(), now())`,
             [req.body.username, hash]
         );
-
         return res.status(201).send({ message: 'Registered!' });
-
     } catch (err) {
         console.error('Fehler bei Registrierung:', err);
         return res.status(500).send({ message: 'Interner Serverfehler' });
