@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-        return res.status(400).send({ message: 'Username and Password are required!' });
+        return res.status(400).send({ message: 'Username und Passwort sind erforderlich!' });
     }
 
     try {
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
         await db.query('UPDATE users SET last_login = now() WHERE id = ?', [user.id]);
 
         return res.status(200).send({
-            message: 'Logged in successfully',
+            message: 'Erfolgreich eingeloggt',
             token,
             user: {
                 id: user.id,
@@ -81,7 +81,7 @@ router.post('/', async (req, res) => {
 });
 
 // POST /start
-router.post('/start', userMiddleware.isLoggedIn, (req, res, next) => {
+router.post('/start', userMiddleware.isLoggedIn, (req, res) => {
     console.log(req.userData);
     res.send('This is secret content');
 });
@@ -139,15 +139,15 @@ router.post('/questions', (req, res) => {
 
 
 // Route für das Abrufen der Bestenliste
-router.get('/leaderboard', (req, res) => {
+router.get('/leaderboard', async (req, res) => {
     const query = 'SELECT username, score FROM users ORDER BY score DESC LIMIT 10'; // Sortiere nach Punktestand absteigend, max. 10 Einträge
-    db.query(query, (err, results) => {
-      if (err) {
+    try {
+        const [results] = await db.query(query);
+        res.json(results); // Gibt die Benutzer und Punktestände als JSON zurück
+    } catch (err) {
         console.error('Fehler beim Abrufen der Bestenliste:', err);
         return res.status(500).json({ message: 'Fehler beim Abrufen der Bestenliste' });
-      }
-      res.json(results); // Gibt die Benutzer und Punktestände als JSON zurück
-    });
+    }
   });
   router.put('/leaderboard', async (req, res) => {
     const { username, score } = req.body;
