@@ -41,58 +41,58 @@ module.exports = (io) => {
     });
 
     // Funktion zum Abrufen der Fragen aus der Datenbank und Zuweisung an die Spieler
-    function sendQuestions(io, lobbyId, category) {
+    async function sendQuestions(io, lobbyId, category) {
       const lobby = lobbies[lobbyId];
       if (!lobby) return;
-
-      // Fragen aus der DB holen
-      db.query('SELECT * FROM questions WHERE category = ?', [category], (err, results) => {
-        if (err) {
-          console.error('Fehler beim Abrufen der Fragen:', err);
-          return io.to(lobbyId).emit('error', { message: 'Fehler beim Abrufen der Fragen' });
-        }
-
+    
+      try {
+        // Hier verwenden wir queryAsync anstelle von db.query direkt
+        const results = await queryAsync('SELECT * FROM questions WHERE category = ?', [category]);
+    
         if (results.length < 2) {
           return io.to(lobbyId).emit('error', { message: 'Nicht genug Fragen in dieser Kategorie' });
         }
-
+    
         // Annahme: `results` enthält alle Fragen der Datenbank
         const half = Math.floor(results.length / 2);
-
+    
         // Teilen der Fragen in zwei Hälften (erste Hälfte und zweite Hälfte)
         const firstHalfQuestions = results.slice(0, half);
         const secondHalfQuestions = results.slice(half);
-
+    
         // Fragen den Spielern zuweisen
         const player1 = lobby.players[0];
         const player2 = lobby.players[1];
-
+    
         // Fragen für beide Spieler (mehr als eine Frage zuweisen)
         lobbies[lobbyId].questions = {
           [player1]: firstHalfQuestions,
           [player2]: secondHalfQuestions
         };
-
+    
         // Fragen an beide Spieler senden
         io.to(player1).emit('newQuestion', {
           question: firstHalfQuestions[0].question,
           options: JSON.parse(firstHalfQuestions[0].options),
           correct: firstHalfQuestions[0].answer
         });
-
+    
         io.to(player2).emit('newQuestion', {
           question: secondHalfQuestions[0].question,
           options: JSON.parse(secondHalfQuestions[0].options),
           correct: secondHalfQuestions[0].answer
         });
-
+    
         // Start-Index für jeden Spieler speichern
         lobbies[lobbyId].currentQuestionIndex = {
           [player1]: 0, // Index der aktuellen Frage für Spieler 1
           [player2]: 0  // Index der aktuellen Frage für Spieler 2
         };
         console.log('Fragen zugewiesen:', firstHalfQuestions);
-      });
+      } catch (err) {
+        console.error('Fehler beim Abrufen der Fragen:', err);
+        return io.to(lobbyId).emit('error', { message: 'Fehler beim Abrufen der Fragen' });
+      }
     }
     socket.on("sendQuestionToTeammate", ({ lobbyId, question }) => {
       const lobby = lobbies[lobbyId];
