@@ -1,10 +1,14 @@
 <template>
     <div class="dashboard">
-      <div id="intro">
-        <h1>Skillmaster Dashboard</h1>
-        <h2 v-if="username">Willkommen zurück, {{ username }}!</h2>
-        <p> Hier kannst du ein Quiz starten, die Fragenkataloge erweitern, gemeinsam mit anderen Spielern lernen und vieles mehr!</p>
+      <div class="hero">
+        <img src="../assets/background-image.jpg">
+        <div id="intro">
+          <h1>Skillmaster Dashboard</h1>
+          <h2 v-if="username">Willkommen zurück, {{ username }}!</h2>
+          <p> Hier kannst du ein Quiz starten, die Fragenkataloge erweitern, gemeinsam mit anderen Spielern lernen und vieles mehr!</p>
+        </div>
       </div>
+      
       <div class="categories-dashboard">
         <div class="quiz-general">
           <p> Erweitere deine Kenntnisse und starte ein Quiz!</p>
@@ -75,22 +79,56 @@
 .dashboard{
   width: 100%;
   color: #fff;
-  padding: 2rem 1rem;
   margin: 0 auto;
-  
+}
+.hero{
+  height: 100vh;
+  transform:translateY(-120px);
+  width: 100%;
+  height: 70vh;
+}
+.hero img{
+  height: 70vh;
+  width: 100%;
+  object-fit:cover;
+  z-index: -2;
+}
+#intro{
+  position:absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70vh;
+  padding: 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index:2;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* 0.5 = 50% Dunkelheit */
+  z-index: 1;
 }
 .dashboard h1, h2, p{
   font-weight: 400;
   color: #fff;
   letter-spacing: 1px;
 }
+
 #intro p{
   color: #fff;
 }
  button, a{
   appearance: none;
   padding: 0.5rem 1rem;
-  background-color: #ad986e;
+  background-color: rgba(84, 106, 123, 1);
   color: #fff;
   text-transform: uppercase;
   border-radius: 0.5rem;
@@ -106,15 +144,18 @@
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   width: 70%;
-  margin: 2rem auto;
+  margin: 0 auto;
   gap: 2rem;
+  padding-bottom: 2rem;
 }
 .categories-dashboard > div {
   padding: 2rem 1rem;
-  background:#fff;
+  background:rgba(84, 106, 123, 0.7);
+  border:1px solid rgba(84, 106, 123, 0.5);
+  border-radius: 20px;
 }
 .categories-dashboard p{
-  color: #ad986e;
+  color: #fff;
 }
 .buttons{
   display:flex;

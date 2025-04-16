@@ -26,8 +26,8 @@ export default {
   },
   computed: {
     backgroundClass() {
-      // Wenn die aktuelle Route die Fragen-Seite ist, entfernen wir das Hintergrundbild
-      return this.$route.name === 'questions' ? 'no-background' : '';
+      const name = this.$route.name;
+      return (name === 'login' || name === 'register') ? 'background' : 'no-background';
     }
   },
 
@@ -79,7 +79,7 @@ body, html, #app{
   box-sizing: border-box;
 }
 #app {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
