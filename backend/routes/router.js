@@ -125,17 +125,26 @@ router.post('/questions', async (req, res) => {
         return res.status(400).json({ message: "Alle Felder sind erforderlich!" });
     }
 
+    // Überprüfe, ob die Frage schon existiert (basierend auf Frage und Optionen)
+  const checkQuery = 'SELECT * FROM questions WHERE question = ? AND options = ?';
+  const checkValues = [question, JSON.stringify(options)];
+
+  try {
+    const [existingQuestions] = await db.query(checkQuery, checkValues);
+    if (existingQuestions.length > 0) {
+      return res.status(400).json({ message: 'Diese Frage wurde bereits hinzugefügt.' });
+    }
+
+    // Wenn die Frage nicht existiert, füge sie hinzu
     const query = 'INSERT INTO questions (question, options, answer, category) VALUES (?, ?, ?, ?)';
     const values = [question, JSON.stringify(options), answer, category];
+    await db.query(query, values);
 
-    try {
-        // Verwende async/await mit der Promise-basierten Abfrage
-        await db.query(query, values);
-        res.status(201).json({ message: 'Frage erfolgreich hinzugefügt!' });
-    } catch (err) {
-        console.error('Fehler beim Speichern der Frage:', err);
-        return res.status(500).json({ message: 'Fehler beim Speichern der Frage' });
-    }
+    res.status(201).json({ message: 'Frage erfolgreich hinzugefügt!' });
+  } catch (err) {
+    console.error('Fehler beim Speichern der Frage:', err);
+    res.status(500).json({ message: 'Fehler beim Speichern der Frage' });
+  }
 });
 
 

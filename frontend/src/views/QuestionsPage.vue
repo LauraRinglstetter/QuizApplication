@@ -101,6 +101,7 @@ export default {
       successMessage: "",
       errorMessage: "", 
       questions: [] // Hält die Fragen zur ausgewählten Kategorie
+      isSubmitting: false, // Steuert den Status des Formulars
     };
   },
   async mounted() {
@@ -219,6 +220,7 @@ export default {
         this.clearMessages();
         return;
       }
+      this.isSubmitting = true;
 
       const questionData = {
         question: this.newQuestion,
@@ -239,6 +241,8 @@ export default {
       } catch (error) {
         this.errorMessage = "Es gab ein Problem beim Hinzufügen der Frage.";
         this.clearMessages();
+      } finally {
+        isSubmitting = false; // Formular-Status zurücksetzen
       }
     },
     clearMessages() {
