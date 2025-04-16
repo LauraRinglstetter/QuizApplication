@@ -103,15 +103,15 @@ router.get('/questions', async (req, res) => {
 });
 
 // Route für das Abrufen der Kategorien
-router.get('/categories', (req, res) => {
+router.get('/categories', async (req, res) => {
     const query = 'SELECT DISTINCT category FROM questions'; // SQL-Abfrage, um alle Kategorien abzurufen
-    db.query(query, (err, results) => {
-      if (err) {
+    try {
+        const [results] = await db.query(query); // Verwende Promise-basierte Methode
+        res.json(results); // Gibt die Kategorien als JSON zurück
+    } catch (err) {
         console.error('Fehler beim Abrufen der Kategorien:', err);
         return res.status(500).json({ message: 'Fehler beim Abrufen der Kategorien' });
-      }
-      res.json(results); // Gibt die Kategorien als JSON zurück
-    });
+    }
 });
 
 // Route für das Hinzufügen von Fragen
