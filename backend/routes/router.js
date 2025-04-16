@@ -24,9 +24,9 @@ router.post('/register', userMiddleware.validateRegister, async(req, res) => {
 
         const hash = await bcrypt.hash(req.body.password, 10);
         await db.query(
-            `INSERT INTO users (id, username, password, registered, last_login) 
-            VALUES (?, ?, ?, now(), now())`,
-            [uuid.v4(), req.body.username, hash]
+            `INSERT INTO users (username, password, registered, last_login) 
+            VALUES (?, ?, now(), now())`,
+            [req.body.username, hash]
         );
 
         return res.status(201).send({ message: 'Registered!' });
