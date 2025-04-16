@@ -41,7 +41,7 @@ module.exports = (io) => {
     });
 
     // Funktion zum Abrufen der Fragen aus der Datenbank und Zuweisung an die Spieler
-    function sendQuestions(io, lobbyId, category) {
+    async function sendQuestions(io, lobbyId, category) {
       const lobby = lobbies[lobbyId];
       if (!lobby) return;
 
