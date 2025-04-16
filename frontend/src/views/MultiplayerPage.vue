@@ -54,9 +54,9 @@
       </div>
 
     
-      <button v-if="quizStarted && !hasAnswered && !playerFinishedMessage"  @click="sendQuestionToTeammate">
+      <!--<button v-if="quizStarted && !hasAnswered && !playerFinishedMessage"  @click="sendQuestionToTeammate">
         Frage an Mitspieler senden
-      </button>
+      </button> -->
       <button 
         v-if="hasAnswered" 
         @click="requestNextQuestion">
@@ -65,7 +65,7 @@
       <div v-if="playerFinishedMessage">
         <h3>{{ playerFinishedMessage }}</h3>
       </div>
-      <div v-if="receivedQuestion">
+      <!--<div v-if="receivedQuestion">
         <h2>Frage von deinem Mitspieler:</h2>
         <h3>{{ receivedQuestion.question }}</h3>
         <div class="options">
@@ -76,7 +76,7 @@
             {{ option }}
           </button>
         </div>
-      </div>
+      </div>-->
       <p v-if="answerFeedback">{{ answerFeedback }}</p>
     </div>
     
@@ -241,6 +241,15 @@ export default {
       teamScore.value = data.teamScore; 
       saveScore(); // Punktestand speichern
       quizCompleted.value = true;
+      //Antwortverlauf vom Server abrufen
+      if (data.answerHistory && data.answerHistory[socket.id]) {
+        answeredQuestions.value = data.answerHistory[socket.id].map(entry => ({
+          question: entry.question,
+          options: entry.options || [], // fallback
+          correct: entry.correctAnswer,
+          selected: entry.selectedAnswer,
+        }));
+      }
     });
 
     //Speichert den Punktestand in der Datenbank

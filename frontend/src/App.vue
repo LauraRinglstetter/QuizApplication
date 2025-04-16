@@ -94,7 +94,7 @@ body, html, #app{
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
                   url('assets/background-image.jpg');
   background-size: cover;
-  background-repeat: no-repeat;
+  background-repeat: repeat;
 }
 .no-background {
   background-image: none;
