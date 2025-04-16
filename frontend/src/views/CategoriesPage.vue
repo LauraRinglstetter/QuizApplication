@@ -56,14 +56,14 @@ p{
 }
 
 button{
-    background-color: #f4f5f5;
-    border: none;
+    background:rgba(84, 106, 123, 0.3);
+    border:1px solid rgba(84, 106, 123, 0.1);
+    border-radius: 20px;
     padding: 5rem 7rem;
-    border-radius: 5px;
     cursor:pointer;
     font-size: 20px;
     flex:1;
-    color: #ad986e;
+    color: #000;
 }
 @media(max-width:1050px){
     button{

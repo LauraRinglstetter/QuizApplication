@@ -150,12 +150,12 @@
 }
 .categories-dashboard > div {
   padding: 2rem 1rem;
-  background:rgba(84, 106, 123, 0.7);
-  border:1px solid rgba(84, 106, 123, 0.5);
+  background:rgba(84, 106, 123, 0.3);
+  border:1px solid rgba(84, 106, 123, 0.1);
   border-radius: 20px;
 }
 .categories-dashboard p{
-  color: #fff;
+  color: #000;
 }
 .buttons{
   display:flex;

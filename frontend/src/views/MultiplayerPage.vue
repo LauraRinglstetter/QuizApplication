@@ -356,9 +356,9 @@ button {
   text-align:left;
 }
 .category{
-  background-color: #fff;
-  border: 1px solid #000;
-  border-radius: 5px;
+  background:rgba(84, 106, 123, 0.3);
+  border:1px solid rgba(84, 106, 123, 0.1);
+  border-radius: 20px;
 }
 .overview{
     display:flex;
