@@ -43,18 +43,6 @@ module.exports = (io) => {
     // Funktion zum Abrufen der Fragen aus der Datenbank und Zuweisung an die Spieler
     async function sendQuestions(io, lobbyId, category) {
       const lobby = lobbies[lobbyId];
-      // Überprüfen, ob mindestens 2 Spieler in der Lobby sind
-      if (lobby.players.length < 2) {
-        console.error('Nicht genug Spieler in der Lobby');
-        return io.to(lobbyId).emit('error', { message: 'Nicht genug Spieler in der Lobby' });
-      }
-      const player1 = lobby.players[0];
-      const player2 = lobby.players[1];
-      //speichert die beantworteten Fragen
-      lobbies[lobbyId].answerHistory = {
-        [player1]: [],
-        [player2]: []
-      };
       if (!lobby) return;
     
       try {
@@ -67,6 +55,9 @@ module.exports = (io) => {
         const half = Math.floor(results.length / 2);
         const firstHalfQuestions = results.slice(0, half);
         const secondHalfQuestions = results.slice(half);
+    
+        const player1 = lobby.players[0];
+        const player2 = lobby.players[1];
     
         lobbies[lobbyId].questions = {
           [player1]: firstHalfQuestions,
@@ -135,7 +126,7 @@ module.exports = (io) => {
         console.log(`Frage wurde an Spieler ${recipientId} gesendet, warte auf Antwort.`);
 
       }
-    }); */
+    });*/
 
     socket.on("requestNextQuestion", (lobbyId) => {
       requestNextQuestion(socket, lobbyId);
@@ -184,8 +175,7 @@ module.exports = (io) => {
             io.to(lobbyId).emit('gameOver', { 
               message: 'Das Spiel ist vorbei!',
               scores: lobby.scores,
-              teamScore: teamScore,
-              answerHistory: lobby.answerHistory // Antwortverlauf an die Spieler senden
+              teamScore: teamScore
             });
             console.log('Spiel beendet:', lobby.scores);
             console.log(`Gesamtpunktzahl des Teams: ${teamScore}`);
@@ -219,16 +209,6 @@ module.exports = (io) => {
       if (correct) {
         lobbies[lobbyId].scores[socket.id] += 1;
       }
-      // Antwort in der History speichern
-      if (!lobbies[lobbyId].answerHistory[socket.id]) {
-        lobbies[lobbyId].answerHistory[socket.id] = [];
-      }
-      lobbies[lobbyId].answerHistory[socket.id].push({
-        question: playerQuestions[currentQuestionIndex].question,
-        options: options,   
-        answer: answer,
-        correct: correct
-      });
 
       // Feedback senden
       socket.emit('answerFeedback', { message: correct ? 'Richtig!' : 'Falsch!', correct });
