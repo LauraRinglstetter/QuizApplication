@@ -180,12 +180,21 @@ p{
     padding: 1rem;
   }
 }
+@media(max-width:800px){
+  #intro{
+    padding: 5%;
+  }
+  .hero, #intro, .hero img{
+    height: 80vh;
+  }
+}
 @media(max-width:600px){
   .categories-dashboard{
     grid-template-columns: 1fr;
     grid-template-rows: repeat(4, 1fr);
     width: 95%;
   }
+  
 
 }
 </style>
