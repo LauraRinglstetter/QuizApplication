@@ -116,29 +116,23 @@ module.exports = (io) => {
         return io.to(lobbyId).emit('error', { message: 'Fehler beim Abrufen der Fragen' });
       }
     }
-    /*socket.on("sendQuestionToTeammate", ({ lobbyId, question }) => {
+    socket.on("sendQuestionToTeammate", ({ lobbyId, question }) => {
       const lobby = lobbies[lobbyId];
       if (!lobby) return;
     
-      // Empfänger ist der andere Spieler in der Lobby
+     
       const recipientId = lobby.players.find(playerId => playerId !== socket.id);
-      
+    
       if (recipientId) {
-        io.to(recipientId).emit("receiveQuestionFromTeammate", question);
+        io.to(recipientId).emit("receiveQuestionFromTeammate", {
+          question: question.question,
+          options: question.options,
+          correct: question.correct
+        });
+    
         console.log(`Frage an Spieler ${recipientId} gesendet:`, question);
-        // Hier wird nur der Index des Spielers erhöht, nicht sofort das GameOver ausgelöst
-        //const nextQuestionIndex = lobby.currentQuestionIndex[socket.id] + 1;
-        //lobby.currentQuestionIndex[socket.id] = nextQuestionIndex;
-        lobby.forwardedQuestions[recipientId] = true;
-
-        console.log(`DEBUG: Spieler ${recipientId} hat eine weitergeleitete Frage erhalten.`);
-
-        requestNextQuestion(socket, lobbyId);
-        // Erst die Frage senden, aber den Index nicht sofort erhöhen
-        console.log(`Frage wurde an Spieler ${recipientId} gesendet, warte auf Antwort.`);
-
       }
-    });*/
+    });
 
     socket.on("requestNextQuestion", (lobbyId) => {
       requestNextQuestion(socket, lobbyId);

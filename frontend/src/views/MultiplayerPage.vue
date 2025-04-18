@@ -57,9 +57,9 @@
       </div>
 
     
-      <!--<button v-if="quizStarted && !hasAnswered && !playerFinishedMessage"  @click="sendQuestionToTeammate">
+      <button v-if="quizStarted && !hasAnswered && !playerFinishedMessage"  @click="sendQuestionToTeammate">
         Frage an Mitspieler senden
-      </button> -->
+      </button>
       <button 
         v-if="hasAnswered" 
         @click="requestNextQuestion">
@@ -69,7 +69,7 @@
         Quiz verlassen
       </button>
       
-      <!--<div v-if="receivedQuestion">
+      <div v-if="receivedQuestion">
         <h2>Frage von deinem Mitspieler:</h2>
         <h3>{{ receivedQuestion.question }}</h3>
         <div class="options">
@@ -80,7 +80,7 @@
             {{ option }}
           </button>
         </div>
-      </div>-->
+      </div>
       <p v-if="answerFeedback">{{ answerFeedback }}</p>
     </div>
     
@@ -195,7 +195,7 @@ export default {
       
       hasAnswered.value = true; // Markiert, dass der Spieler geantwortet hat
     };
-    /* Spieler antwortet auf eine empfangene Frage
+    // Spieler antwortet auf eine empfangene Frage
     const sendReceivedAnswer = (answerIndex) => {
       if (!receivedQuestion.value) return; // Falls keine empfangene Frage vorhanden ist
       socket.emit('answerQuestion', { 
@@ -203,7 +203,7 @@ export default {
         answer: answerIndex 
       });
       receivedQuestion.value = null; // Entfernt die Frage nach der Antwort
-    };*/
+    };
 
     // Update der Lobby, wenn ein Spieler beitritt
     socket.on('lobbyUpdate', (data) => {
@@ -345,6 +345,7 @@ export default {
       selectCategory,
       joinLobby,
       sendQuestionToTeammate,
+      sendReceivedAnswer,
       receivedQuestion,
       requestNextQuestion, 
       quizCompleted,
