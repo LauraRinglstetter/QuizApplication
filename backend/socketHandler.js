@@ -247,5 +247,25 @@ module.exports = (io) => {
         }
       });
     });
+    socket.on('playerLeftQuiz', ({ lobbyId }) => {
+      const lobby = lobbies[lobbyId];
+      if (!lobby) return;
+    
+      // Spieler aus der Lobby entfernen
+      lobby.players = lobby.players.filter(p => p !== socket.id);
+    
+      // Den anderen Spieler benachrichtigen
+      const remainingPlayer = lobby.players[0];
+      if (remainingPlayer) {
+        io.to(remainingPlayer).emit('playerLeft', {
+          message: 'Dein Mitspieler hat das Quiz verlassen.',
+        });
+      }
+    
+      // Lobby aufräumen, wenn leer
+      if (lobby.players.length === 0) {
+        delete lobbies[lobbyId];
+      }
+    });
   });
 };

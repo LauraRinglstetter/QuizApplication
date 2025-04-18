@@ -62,6 +62,9 @@
         @click="requestNextQuestion">
           Nächste Frage
       </button>
+      <button @click="leaveQuiz" class="leave-button">
+        Quiz verlassen
+      </button>
       <div v-if="playerFinishedMessage">
         <h3>{{ playerFinishedMessage }}</h3>
       </div>
@@ -295,7 +298,21 @@ export default {
       quizStarted.value = false;
       quizCompleted.value = true;
       playerFinishedMessage.value = data.message;
+
+      setTimeout(() => {
+        window.location.href = "/home";
+      }, 5000);
     });
+    const leaveQuiz = () => {
+      if (lobby.value && lobby.value.id) {
+        socket.emit('playerLeftQuiz', { lobbyId: lobby.value.id });
+      }
+
+      // Reset local state
+      quizStarted.value = false;
+      quizCompleted.value = true;
+      playerFinishedMessage.value = 'Du hast das Quiz verlassen.';
+    };
 
     // Kategorien beim Laden der Seite abrufen
     fetchCategories();
@@ -322,6 +339,7 @@ export default {
       answeredQuestions,
       playerFinishedMessage,
       partnerAnsweredQuestions,
+      leaveQuiz,
     };
   },
 };
