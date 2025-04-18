@@ -132,8 +132,6 @@ module.exports = (io) => {
         });
     
         console.log(`Frage an Spieler ${recipientId} gesendet:`, question);
-        lobby.currentQuestionIndex[senderId] += 1;
-        console.log(`Neuer Index für ${senderId}:`, lobby.currentQuestionIndex[senderId]);
       }
     });
 
