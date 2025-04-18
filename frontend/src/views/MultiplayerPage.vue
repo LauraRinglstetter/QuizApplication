@@ -285,7 +285,7 @@ export default {
 
         const response = await axios.put(`${process.env.VUE_APP_API_BASE}/leaderboard`, {
           username,
-          score: score.value, // Berechneter Punktestand
+          score: score.value, // Punktestand
         });
 
         console.log('Punktestand gespeichert:', response.data);
@@ -294,8 +294,7 @@ export default {
       }
     };
     socket.on('playerLeft', (data) => {
-      alert(data.message);
-      // Optional: Setze den Status zurück oder leite zur Startseite weiter
+      //alert(data.message);
       quizStarted.value = false;
       quizCompleted.value = true;
       playerFinishedMessage.value = data.message;
@@ -318,6 +317,14 @@ export default {
         window.location.href = "/home";
       }, 5000);
     };
+    socket.on('error', (data) => {
+      playerFinishedMessage.value = data.message;
+
+      setTimeout(() => {
+        playerFinishedMessage.value = null;
+      }, 3000);
+    });
+  
 
     // Kategorien beim Laden der Seite abrufen
     fetchCategories();

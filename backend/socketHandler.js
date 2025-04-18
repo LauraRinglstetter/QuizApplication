@@ -8,9 +8,17 @@ module.exports = (io) => {
     console.log('Neuer Spieler verbunden:', socket.id);
 
     // Spieler tritt automatisch einer freien Lobby bei
-    socket.on('joinLobby', (data) => {
+    socket.on('joinLobby', async (data) => {
       const category = data.category;
       console.log('Kategorie erhalten:', category);
+
+      // Überprüfe, ob genügend Fragen existieren
+      try {
+        const [results] = await db.query('SELECT * FROM questions WHERE category = ?', [category]);
+
+        if (results.length < 2) {
+          return socket.emit('error', { message: 'Nicht genug Fragen in dieser Kategorie. Bitte wähle eine andere.' });
+        }
 
       let lobbyId = Object.keys(lobbies).find(id => lobbies[id].players.length < 2);
 
@@ -37,6 +45,10 @@ module.exports = (io) => {
         // Fragen aus der Datenbank für beide Spieler laden
         const category = lobbies[lobbyId].category;
         sendQuestions(io, lobbyId, category);
+      }
+    } catch (err) {
+        console.error('Fehler beim Abrufen der Fragen:', err);
+        socket.emit('error', { message: 'Fehler beim Abrufen der Fragen' });
       }
     });
 
