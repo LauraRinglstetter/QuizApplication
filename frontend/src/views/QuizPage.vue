@@ -156,8 +156,7 @@ const score = computed(() => {
   })
   return value;
 })
-const username = sessionStorage.getItem('username');
-console.log('Benutzername aus sessionStorage:', username);
+//const username = sessionStorage.getItem('username');
 //Speichert den Punktestand in der Datenbank
 const saveScore = async () => {
   try {
@@ -168,12 +167,11 @@ const saveScore = async () => {
       return;
     }
     
-    const response = await axios.put(`${process.env.VUE_APP_API_BASE}/leaderboard`, {
+    await axios.put(`${process.env.VUE_APP_API_BASE}/leaderboard`, {
       username,
       score: score.value, // Berechneter Punktestand
     });
 
-    console.log('Punktestand gespeichert:', response.data);
   } catch (error) {
     console.error('Fehler beim Speichern des Punktestands:', error);
   }

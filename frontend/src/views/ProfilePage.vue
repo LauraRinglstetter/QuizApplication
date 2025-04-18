@@ -43,7 +43,6 @@ export default {
       if (token) {
         try {
           const decodedToken = jwtDecode(token);
-          console.log("Token-Daten:", decodedToken);
 
           this.username = decodedToken.username;
           this.id = decodedToken.id;

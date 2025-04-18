@@ -128,7 +128,6 @@ export default {
     // Spieler tritt der Lobby bei
     const joinLobby = () => {
       if (!selectedCategory.value) return;
-      console.log('Joining lobby for category:', selectedCategory.value);
       socket.emit('joinLobby', { category: selectedCategory.value });
     };
     const requestNextQuestion = () => {
@@ -228,8 +227,6 @@ export default {
           username,
           score: score.value, // Berechneter Punktestand
         });
-
-        console.log('Punktestand gespeichert:', response.data);
       } catch (error) {
         console.error('Fehler beim Speichern des Punktestands:', error);
       }

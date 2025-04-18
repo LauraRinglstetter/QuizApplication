@@ -140,7 +140,6 @@ export default {
       try {
         const response = await axios.get(`${process.env.VUE_APP_API_BASE}/categories`);// API-Aufruf
         this.categories = response.data.map(cat => cat.category);
-        console.log(this.categories);
       } catch (error) {
         console.error("Fehler beim Abrufen der Kategorien:", error);
       }

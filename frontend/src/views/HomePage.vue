@@ -50,7 +50,6 @@
       if (token) {
         try {
           const decodedToken = jwtDecode(token);// Decodiere den Token
-          console.log(decodedToken);
           this.username = decodedToken.username; // Setze den Benutzernamen
         } catch (error) {
           console.error('Fehler beim Decodieren des Tokens:', error);

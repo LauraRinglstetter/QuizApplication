@@ -60,6 +60,11 @@
       <button v-if="quizStarted && !hasAnswered && !playerFinishedMessage"  @click="sendQuestionToTeammate">
         Frage an Mitspieler senden
       </button>
+      <p 
+        v-if="teammateAnsweredNotification" 
+        style="font-weight: bold; color: #333; margin-top: 1rem;">
+        {{ teammateAnsweredNotification }}
+      </p>
       <button 
         v-if="hasAnswered" 
         @click="requestNextQuestion">
@@ -159,6 +164,7 @@ export default {
     const answeredQuestions = ref([]); // Speichert alle beantworteten Fragen
     const playerFinishedMessage = ref(null); 
     const teammateAnswerFeedback = ref(null); // Feedback für die Antwort des Mitspielers
+    const teammateAnsweredNotification = ref(null); // Benachrichtigung für den Mitspieler, wenn er geantwortet hat
 
     // Abrufen der Kategorien
     const fetchCategories = async () => {
@@ -177,7 +183,6 @@ export default {
     // Spieler tritt der Lobby bei
     const joinLobby = () => {
       if (!selectedCategory.value) return;
-      console.log('Joining lobby for category:', selectedCategory.value);
       socket.emit('joinLobby', { category: selectedCategory.value });
     };
     const requestNextQuestion = () => {
@@ -211,7 +216,8 @@ export default {
         answer: answerIndex,
         correct: receivedQuestion.value.correct,
         question: receivedQuestion.value.question,
-        options: receivedQuestion.value.options, // optional: für spätere Anzeige
+        options: receivedQuestion.value.options,
+        from: receivedQuestion.value.from, 
       });
       receivedQuestion.value = null; // Entfernt die Frage nach der Antwort
     };
@@ -245,7 +251,10 @@ export default {
     const sendQuestionToTeammate = () => {
       socket.emit("sendQuestionToTeammate", { 
         lobbyId: lobby.value.id, 
-        question: currentQuestion.value 
+        question: {
+          ...currentQuestion.value,
+          from: socket.id, 
+        },
       });
 
       requestNextQuestion(); 
@@ -254,6 +263,15 @@ export default {
     // Empfangene Frage speichern
     socket.on("receiveQuestionFromTeammate", (question) => {
       receivedQuestion.value = question;
+    });
+
+    socket.on('teammateAnsweredForwardedQuestion', (data) => {
+      teammateAnsweredNotification.value = data.message;
+
+      // Automatisch nach 3 Sekunden wieder ausblenden
+      setTimeout(() => {
+        teammateAnsweredNotification.value = null;
+      }, 3000);
     });
 
     // Feedback zur Antwort
@@ -311,12 +329,10 @@ export default {
           return;
         } 
 
-        const response = await axios.put(`${process.env.VUE_APP_API_BASE}/leaderboard`, {
+        await axios.put(`${process.env.VUE_APP_API_BASE}/leaderboard`, {
           username,
           score: score.value, // Punktestand
         });
-
-        console.log('Punktestand gespeichert:', response.data);
       } catch (error) {
         console.error('Fehler beim Speichern des Punktestands:', error);
       }

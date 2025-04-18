@@ -261,6 +261,12 @@ module.exports = (io) => {
         message: isCorrect ? 'Richtig!' : 'Falsch!',
         correct: isCorrect,
       });
+      //Nachricht an den Sender der Frage
+      if (from) {
+        io.to(from).emit('teammateAnsweredForwardedQuestion', {
+          message: `Dein Mitspieler hat deine Frage ${isCorrect ? 'richtig' : 'falsch'} beantwortet.`,
+        });
+      }
     });
     socket.on('disconnect', () => {
       console.log(`Spieler ${socket.id} hat das Spiel verlassen`);
