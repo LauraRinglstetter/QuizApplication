@@ -207,7 +207,7 @@ module.exports = (io) => {
       const correctAnswer = playerQuestions[currentQuestionIndex].answer; // Die richtige Antwort
       console.log(playerQuestions[currentQuestionIndex]);
       console.log('Richtige Antwort:', correctAnswer); 
-      const correct = answer === correctAnswer;
+      const correct = Number(answer) === Number(correctAnswer);
 
       // Speichern der beantworteten Fragen
       if (!lobby.answeredQuestions) {
@@ -239,7 +239,7 @@ module.exports = (io) => {
       const lobby = lobbies[lobbyId];
       if (!lobby) return;
     
-      const isCorrect = answer === correct;
+      const isCorrect = Number(answer) === Number(correct);
     
       if (!lobby.answeredQuestions) lobby.answeredQuestions = {};
       if (!lobby.answeredQuestions[socket.id]) lobby.answeredQuestions[socket.id] = [];
