@@ -248,10 +248,7 @@ export default {
         question: currentQuestion.value 
       });
 
-      // Frage beim Sender ausblenden und Status zurücksetzen
-      currentQuestion.value = {};  
-      hasAnswered.value = false;
-      answerFeedback.value = '';
+      requestNextQuestion(); 
     };
 
     // Empfangene Frage speichern
