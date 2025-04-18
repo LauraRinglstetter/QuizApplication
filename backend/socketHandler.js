@@ -234,6 +234,13 @@ module.exports = (io) => {
       Object.keys(lobbies).forEach((lobbyId) => {
         if (lobbies[lobbyId].players.includes(socket.id)) {
           lobbies[lobbyId].players = lobbies[lobbyId].players.filter(p => p !== socket.id);
+          // Benachrichtige den anderen Spieler
+          const remainingPlayer = lobbies[lobbyId].players[0];
+          if (remainingPlayer) {
+            io.to(remainingPlayer).emit('playerLeft', {
+              message: 'Dein Mitspieler hat das Spiel verlassen.',
+            });
+          }
           if (lobbies[lobbyId].players.length === 0) {
             delete lobbies[lobbyId];
           }

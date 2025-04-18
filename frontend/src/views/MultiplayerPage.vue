@@ -289,6 +289,13 @@ export default {
         console.error('Fehler beim Speichern des Punktestands:', error);
       }
     };
+    socket.on('playerLeft', (data) => {
+      alert(data.message);
+      // Optional: Setze den Status zurück oder leite zur Startseite weiter
+      quizStarted.value = false;
+      quizCompleted.value = true;
+      playerFinishedMessage.value = data.message;
+    });
 
     // Kategorien beim Laden der Seite abrufen
     fetchCategories();
@@ -307,7 +314,7 @@ export default {
       gameOver,
       selectCategory,
       joinLobby,
-      sendQuestionToTeammate, // ← Hier hinzufügen!
+      sendQuestionToTeammate,
       receivedQuestion,
       requestNextQuestion, 
       quizCompleted,
