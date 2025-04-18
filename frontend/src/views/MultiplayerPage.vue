@@ -286,7 +286,7 @@ export default {
     socket.on('gameOver', (data) => {
       gameOver.value = true;
       teamScore.value = data.teamScore; 
-      saveScore(); // Punktestand speichern
+      
       quizCompleted.value = true;
 
       // Daten aus dem Backend extrahieren
@@ -294,8 +294,11 @@ export default {
       const playerId = socket.id;
       const otherPlayerId = Object.keys(allAnswers).find(id => id !== playerId);
 
+      score.value = data.scores[playerId] || 0;
       answeredQuestions.value = allAnswers[playerId] || [];
       partnerAnsweredQuestions.value = allAnswers[otherPlayerId] || [];
+
+      saveScore(); // Punktestand speichern
     });
 
     //Speichert den Punktestand in der Datenbank
