@@ -81,6 +81,11 @@
             {{ option }}
           </button>
         </div>
+        <div v-if="teammateAnswerFeedback" class="feedback">
+          <p :style="{ color: teammateAnswerFeedback === 'Richtig!' ? 'green' : 'red', fontWeight: 'bold' }">
+            {{ teammateAnswerFeedback }}
+          </p>
+        </div>
         </div>  
       </div>
       <p v-if="answerFeedback">{{ answerFeedback }}</p>
@@ -153,6 +158,7 @@ export default {
     const partnerAnsweredQuestions = ref([]); // Variable für Mitspieler
     const answeredQuestions = ref([]); // Speichert alle beantworteten Fragen
     const playerFinishedMessage = ref(null); 
+    const teammateAnswerFeedback = ref(null); // Feedback für die Antwort des Mitspielers
 
     // Abrufen der Kategorien
     const fetchCategories = async () => {
@@ -251,8 +257,20 @@ export default {
     // Feedback zur Antwort
     socket.on('answerFeedback', (feedback) => {
       answerFeedback.value = feedback.message;
-      if (feedback.correct) {
-        score.value += 1;
+
+      // Unterscheidung: Wenn Modal aktiv war, dann dort Feedback anzeigen
+      if (receivedQuestion.value === null) {
+        teammateAnswerFeedback.value = feedback.message;
+
+        // Feedback nach 3 Sekunden wieder ausblenden
+        setTimeout(() => {
+          teammateAnswerFeedback.value = null;
+        }, 3000);
+      } else {
+        // Normales Feedback bei DB-Fragen
+        if (feedback.correct) {
+          score.value += 1;
+        }
       }
     });
 
