@@ -234,7 +234,32 @@ module.exports = (io) => {
       
     });
 
-
+    socket.on('answerTeammateQuestion', (data) => {
+      const { lobbyId, answer, correct, question, options } = data;
+      const lobby = lobbies[lobbyId];
+      if (!lobby) return;
+    
+      const isCorrect = answer === correct;
+    
+      if (!lobby.answeredQuestions) lobby.answeredQuestions = {};
+      if (!lobby.answeredQuestions[socket.id]) lobby.answeredQuestions[socket.id] = [];
+    
+      lobby.answeredQuestions[socket.id].push({
+        question,
+        options,
+        correct,
+        selected: answer,
+      });
+    
+      if (isCorrect) {
+        lobby.scores[socket.id] += 1;
+      }
+    
+      socket.emit('answerFeedback', {
+        message: isCorrect ? 'Richtig!' : 'Falsch!',
+        correct: isCorrect,
+      });
+    });
     socket.on('disconnect', () => {
       console.log(`Spieler ${socket.id} hat das Spiel verlassen`);
       Object.keys(lobbies).forEach((lobbyId) => {

@@ -200,9 +200,12 @@ export default {
     // Spieler antwortet auf eine empfangene Frage
     const sendReceivedAnswer = (answerIndex) => {
       if (!receivedQuestion.value) return; // Falls keine empfangene Frage vorhanden ist
-      socket.emit('answerQuestion', { 
-        lobbyId: lobby.value.id, 
-        answer: answerIndex 
+      socket.emit('answerTeammateQuestion', {
+        lobbyId: lobby.value.id,
+        answer: answerIndex,
+        correct: receivedQuestion.value.correct,
+        question: receivedQuestion.value.question,
+        options: receivedQuestion.value.options, // optional: für spätere Anzeige
       });
       receivedQuestion.value = null; // Entfernt die Frage nach der Antwort
     };
