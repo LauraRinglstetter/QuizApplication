@@ -121,7 +121,8 @@ module.exports = (io) => {
       if (!lobby) return;
     
      
-      const recipientId = lobby.players.find(playerId => playerId !== socket.id);
+      const senderId = socket.id;
+      const recipientId = lobby.players.find(playerId => playerId !== senderId);
     
       if (recipientId) {
         io.to(recipientId).emit("receiveQuestionFromTeammate", {
@@ -131,11 +132,13 @@ module.exports = (io) => {
         });
     
         console.log(`Frage an Spieler ${recipientId} gesendet:`, question);
+        lobby.currentQuestionIndex[senderId] += 1;
       }
     });
 
     socket.on("requestNextQuestion", (lobbyId) => {
       requestNextQuestion(socket, lobbyId);
+      console.log(`Neuer Index für ${socket.id}:`, nextQuestionIndex);
     });
     // Abrufen der nächsten Frage
     const requestNextQuestion = (socket, lobbyId) => {
