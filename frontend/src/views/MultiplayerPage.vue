@@ -2,6 +2,9 @@
   <div>
     <router-link to="/home" class="exit button">Zurück zum Dashboard</router-link>
     <h1>Multiplayer-Quiz</h1>
+    <div v-if="playerFinishedMessage">
+      <h2>{{ playerFinishedMessage }}</h2>
+    </div>
     
     
     <div v-if="!selectedCategory">
@@ -65,9 +68,7 @@
       <button @click="leaveQuiz" class="leave-button">
         Quiz verlassen
       </button>
-      <div v-if="playerFinishedMessage">
-        <h3>{{ playerFinishedMessage }}</h3>
-      </div>
+      
       <!--<div v-if="receivedQuestion">
         <h2>Frage von deinem Mitspieler:</h2>
         <h3>{{ receivedQuestion.question }}</h3>
@@ -301,7 +302,7 @@ export default {
 
       setTimeout(() => {
         window.location.href = "/home";
-      }, 6000);
+      }, 5000);
     });
     const leaveQuiz = () => {
       if (lobby.value && lobby.value.id) {
@@ -311,11 +312,11 @@ export default {
       // Reset local state
       quizStarted.value = false;
       quizCompleted.value = true;
-      playerFinishedMessage.value = 'Du hast das Quiz verlassen.';
+      playerFinishedMessage.value = 'Du hast das Quiz verlassen. Du wirst nun zur Startseite weitergeleitet';
 
       setTimeout(() => {
         window.location.href = "/home";
-      }, 6000);
+      }, 5000);
     };
 
     // Kategorien beim Laden der Seite abrufen

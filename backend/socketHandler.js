@@ -238,7 +238,7 @@ module.exports = (io) => {
           const remainingPlayer = lobbies[lobbyId].players[0];
           if (remainingPlayer) {
             io.to(remainingPlayer).emit('playerLeft', {
-              message: 'Dein Mitspieler hat das Spiel verlassen.',
+              message: 'Dein Mitspieler hat das Spiel verlassen. Du wirst nun zur Startseite weitergeleitet.',
             });
           }
           if (lobbies[lobbyId].players.length === 0) {
@@ -258,7 +258,7 @@ module.exports = (io) => {
       const remainingPlayer = lobby.players[0];
       if (remainingPlayer) {
         io.to(remainingPlayer).emit('playerLeft', {
-          message: 'Dein Mitspieler hat das Quiz verlassen.',
+          message: 'Dein Mitspieler hat das Quiz verlassen. Du wirst nun zur Startseite weitergeleitet.',
         });
       }
     
