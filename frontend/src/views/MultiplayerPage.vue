@@ -301,7 +301,7 @@ export default {
 
       setTimeout(() => {
         window.location.href = "/home";
-      }, 5000);
+      }, 6000);
     });
     const leaveQuiz = () => {
       if (lobby.value && lobby.value.id) {
@@ -312,6 +312,10 @@ export default {
       quizStarted.value = false;
       quizCompleted.value = true;
       playerFinishedMessage.value = 'Du hast das Quiz verlassen.';
+
+      setTimeout(() => {
+        window.location.href = "/home";
+      }, 6000);
     };
 
     // Kategorien beim Laden der Seite abrufen
