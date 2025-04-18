@@ -2,7 +2,7 @@
   <div>
     <router-link to="/home" class="exit button">Zurück zum Dashboard</router-link>
     <h1>Multiplayer-Quiz</h1>
-    <div v-if="playerFinishedMessage">
+    <div v-if="playerFinishedMessage && !quizCompleted">
       <h2>{{ playerFinishedMessage }}</h2>
     </div>
     
