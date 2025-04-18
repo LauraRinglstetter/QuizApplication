@@ -69,8 +69,9 @@
         Quiz verlassen
       </button>
       
-      <div v-if="receivedQuestion">
-        <h2>Frage von deinem Mitspieler:</h2>
+      <div v-if="receivedQuestion" class="modal-overlay">
+        <div class="modal">
+          <h2>Du hast eine Frage von deinem Mitspieler erhalten!</h2>
         <h3>{{ receivedQuestion.question }}</h3>
         <div class="options">
           <button 
@@ -80,6 +81,7 @@
             {{ option }}
           </button>
         </div>
+        </div>  
       </div>
       <p v-if="answerFeedback">{{ answerFeedback }}</p>
     </div>
@@ -431,5 +433,37 @@ button {
     border-radius: 5px;
     cursor:pointer;
     font-size: 20px;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal .options {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.modal .options button {
+  margin: 0.5rem 0;
 }
 </style>
