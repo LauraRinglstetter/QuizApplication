@@ -301,7 +301,7 @@ export default {
 
       setTimeout(() => {
         window.location.href = "/home";
-      }, 5000);
+      }, 4000);
     });
     const leaveQuiz = () => {
       if (lobby.value && lobby.value.id) {
@@ -315,13 +315,14 @@ export default {
 
       setTimeout(() => {
         window.location.href = "/home";
-      }, 5000);
+      }, 4000);
     };
     socket.on('error', (data) => {
       playerFinishedMessage.value = data.message;
 
       setTimeout(() => {
         playerFinishedMessage.value = null;
+        window.location.href = "/multiplayer";
       }, 3000);
     });
   
