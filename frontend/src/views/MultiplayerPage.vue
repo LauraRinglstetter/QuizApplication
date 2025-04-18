@@ -247,6 +247,11 @@ export default {
         lobbyId: lobby.value.id, 
         question: currentQuestion.value 
       });
+
+      // Frage beim Sender ausblenden und Status zurücksetzen
+      currentQuestion.value = {};  
+      hasAnswered.value = false;
+      answerFeedback.value = '';
     };
 
     // Empfangene Frage speichern
