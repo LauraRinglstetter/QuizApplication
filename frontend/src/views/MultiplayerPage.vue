@@ -21,7 +21,7 @@
       </div>
     </div>
     
-    <button v-if="!lobby && selectedCategory" @click="joinLobby" class="quiz-start">Quiz starten</button>
+    <button v-if="!lobby && selectedCategory || !playerFinishedMessage" @click="joinLobby" class="quiz-start">Quiz starten</button>
 
     <div v-if="lobby && !quizCompleted">
       <p>Lobby-ID: {{ lobby.id }}</p>
@@ -323,7 +323,7 @@ export default {
       setTimeout(() => {
         playerFinishedMessage.value = null;
         window.location.href = "/multiplayer";
-      }, 3000);
+      }, 2000);
     });
   
 
