@@ -237,7 +237,7 @@ module.exports = (io) => {
     });
 
     socket.on('answerTeammateQuestion', (data) => {
-      const { lobbyId, answer, correct, question, options } = data;
+      const { lobbyId, answer, correct, question, options, from } = data;
       const lobby = lobbies[lobbyId];
       if (!lobby) return;
     
